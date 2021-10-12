@@ -1,0 +1,45 @@
+# ============================== Python ==============================
+*.sqlite3
+/static
+/static/**
+/media
+/media/**
+**/staticfiles/media/**
+**/staticfiles/static/**
+**.log
+
+# ============================== React ==============================
+**/node_modules
+
+
+# ============================== Common ==============================
+__testing__
+__testing__/**
+
+
+# ============================== Visual Studio Code ==============================
+.vscode/
+.vscode/**
+
+
+# ============================== Environments ==============================
+.env
+.env.db
+.env.prod
+.env.prod.db
+.env/
+.envs/
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+
+# ============================== Sublime Text ==============================
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-shareaes
