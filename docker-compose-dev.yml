@@ -9,12 +9,14 @@ x-volumes: &server-volume
   EMAIL_PASS: 'demo_pass'
 
 services:
-  api:
+  server:
     build:
       context: ./
       dockerfile: ./Dockerfile
     container_name: node_blog_server
     command: yarn start:dev
+    env_file:
+      - .env
     environment:
       <<: *server-volume
     ports:
@@ -27,7 +29,6 @@ services:
 
   db:
     image: library/postgres:14
-    container_name: node_blog_db
     ports:
       - 5432:5432
     restart: unless-stopped
@@ -38,7 +39,7 @@ services:
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=db_pass
-      # - POSTGRES_DB=blog_db
+      - POSTGRES_DB=blog_db
 
   redis-server:
     image: redis
