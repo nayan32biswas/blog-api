@@ -1,7 +1,7 @@
 import { KeyObject } from './types/common.type';
 
 export const DATABASE: KeyObject = {
-  HOST: 'db',
+  HOST: '172.28.0.1',
   PORT: 5432,
   POSTGRES_USER: process.env.POSTGRES_USER,
   POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,

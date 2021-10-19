@@ -4,26 +4,6 @@ import { DATABASE, COMMON } from '../keys';
 // const DATABASE: any = require('../keys');
 
 class ConfigService {
-  constructor(private env: { [k: string]: string | undefined }) {}
-
-  private getValue(key: string, throwOnMissing = true): string {
-    const value = this.env[key];
-    if (!value && throwOnMissing) {
-      throw new Error(`config error - missing env.${key}`);
-    }
-
-    return value;
-  }
-
-  public ensureValues(keys: string[]) {
-    keys.forEach((k) => this.getValue(k, true));
-    return this;
-  }
-
-  public getPort() {
-    return DATABASE.PORT;
-  }
-
   public isProduction() {
     return COMMON.DEBUG == false;
   }
@@ -36,24 +16,22 @@ class ConfigService {
       username: DATABASE.POSTGRES_USER,
       password: DATABASE.POSTGRES_PASSWORD,
       database: DATABASE.POSTGRES_DATABASE,
-
-      entities: ['**/*.entity{.ts,.js}'],
+      ssl: COMMON.DEBUG === false,
+      synchronize: this.isProduction(),
+      logging: false,
+      entities: ['dist/**/*.entity.js'],
       migrationsTableName: 'migration',
-      migrations: ['src/migration/*.ts'],
+      migrations: ['dist/migration/**/*.js'],
+      subscribers: ['dist/subscriber/**/*.js'],
       cli: {
-        migrationsDir: 'src/migration',
+        entitiesDir: 'dist/entity',
+        migrationsDir: 'dist/migration',
+        subscribersDir: 'dist/subscriber',
       },
-      ssl: this.isProduction(),
     };
   }
 }
 
-const configService = new ConfigService(process.env).ensureValues([
-  DATABASE.HOST,
-  DATABASE.PORT,
-  DATABASE.POSTGRES_USER,
-  DATABASE.POSTGRES_PASSWORD,
-  DATABASE.POSTGRES_DATABASE,
-]);
+const configService = new ConfigService();
 
 export { configService };

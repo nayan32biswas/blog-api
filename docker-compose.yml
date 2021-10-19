@@ -2,8 +2,8 @@ version: '3.7'
 
 # environment
 x-volumes: &server-volume
-  POSTGRES_USER: 'dbuser'
-  POSTGRES_PASSWORD: 'db_pass'
+  POSTGRES_USER: 'postgres'
+  POSTGRES_PASSWORD: 'postgres'
   POSTGRES_DB: 'blog_db'
   EMAIL_HOST: 'demo@gmail.com'
   EMAIL_PASS: 'demo_pass'
@@ -36,9 +36,7 @@ services:
     volumes:
       - postgres-db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=db_pass
-      # - POSTGRES_DB=blog_db
+      <<: *server-volume
 
   redis-server:
     image: redis
