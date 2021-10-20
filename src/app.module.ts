@@ -9,8 +9,8 @@ import { PostModule } from './post/post.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
-    UserModule,
     CommonModule,
+    UserModule,
     PostModule,
   ],
 })

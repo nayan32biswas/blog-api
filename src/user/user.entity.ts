@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 import { BaseEntity } from '../common/common.entity';
 
 @Entity({ name: 'user' })
@@ -16,13 +21,11 @@ export class UserEntity extends BaseEntity {
   @Column()
   lastName: string;
 
-  @Column()
-  age: number;
+  @CreateDateColumn({ type: 'timestamptz' })
+  birthDate: Date;
 
   @Column()
-  is_active: boolean;
+  isStaff: boolean;
   @Column()
-  is_staff: boolean;
-  @Column()
-  is_admin: boolean;
+  isAdmin: boolean;
 }
