@@ -38,7 +38,7 @@ services:
     environment:
       <<: *server-volume
 
-  redis-server:
+  worker:
     image: redis
 
 volumes:
