@@ -1,37 +1,52 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { KeyObject } from '../types/common.type';
 
-import { DATABASE, COMMON } from '../keys';
-// const DATABASE: any = require('../keys');
+export const DEBUG = process.env.DEBUG === 'true';
+if (DEBUG) {
+  console.log('Development Mode');
+} else {
+  console.log('Production Mode');
+}
+
+export const EMAIL_CONF: KeyObject = {
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_HOST,
+    pass: process.env.EMAIL_PASS,
+  },
+};
+
+export const HOST = process.env.HOST || 'http://localhost:8000';
+export const PAGE_SIZE = 10;
+export const TOKEN_EXPIRES_IN = '1h';
+export const REFRESH_TOKEN_EXPIRES_IN = '72h';
+export const EMAIL_VERIFICATION_EXPIRES_IN = '1h';
+export const JWT_ALGORITHM = 'HS256';
 
 class ConfigService {
-  public isProduction() {
-    return COMMON.DEBUG == false;
-  }
-
   public getTypeOrmConfig(): TypeOrmModuleOptions {
     return {
       type: 'postgres',
-      host: DATABASE.HOST,
-      port: DATABASE.PORT,
-      username: DATABASE.POSTGRES_USER,
-      password: DATABASE.POSTGRES_PASSWORD,
-      database: DATABASE.POSTGRES_DATABASE,
-      ssl: COMMON.DEBUG === false,
-      synchronize: this.isProduction(),
+      host: 'db',
+      port: 5432,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      ssl: !DEBUG,
+      synchronize: DEBUG, // TODO: make it false, don't update table automatically
       logging: false,
-      entities: ['dist/**/*.entity.js'],
+      entities: ['dist/**/*.entity{.ts,.js}'],
       migrationsTableName: 'migration',
-      migrations: ['dist/migration/**/*.js'],
-      subscribers: ['dist/subscriber/**/*.js'],
+      migrations: ['dist/migrations/*{.ts,.js}'],
+      subscribers: ['dist/subscribers/*.js'],
       cli: {
-        entitiesDir: 'dist/entity',
-        migrationsDir: 'dist/migration',
-        subscribersDir: 'dist/subscriber',
+        migrationsDir: 'src/migrations',
+        subscribersDir: 'src/subscribers',
       },
     };
   }
 }
 
-const configService = new ConfigService();
-
-export { configService };
+export const configService = new ConfigService();

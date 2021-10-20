@@ -7,18 +7,21 @@ x-volumes: &server-volume
   POSTGRES_DB: 'blog_db'
   EMAIL_HOST: 'demo@gmail.com'
   EMAIL_PASS: 'demo_pass'
+  DEBUG: 'true'
 
 services:
   api:
     build:
       context: ./
       dockerfile: ./Dockerfile
-    container_name: node_blog_server
+    container_name: nest_blog_server
     command: yarn start:dev
     environment:
       <<: *server-volume
     ports:
       - '8000:8000'
+    networks:
+      - backend-tier
     volumes:
       - ./:/server/
       - /server/node_modules
@@ -27,7 +30,7 @@ services:
 
   db:
     image: library/postgres:14
-    container_name: node_blog_db
+    container_name: nest_blog_db
     ports:
       - 5432:5432
     restart: unless-stopped
