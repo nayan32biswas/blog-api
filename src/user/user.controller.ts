@@ -8,23 +8,18 @@ import {
   Body,
   Query,
   Req,
+  HttpException,
+  HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { KeyObject } from '../types/common.type';
 import { RegistrationDto } from './user.dto';
+import { User } from './user.interface';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(private readonly usersService: UserService) {}
-  @Get()
-  getUsers() {
-    return this.usersService.getUsers();
-  }
-  @Get(':id')
-  getUser(@Req() req, @Param() params, @Query() query) {
-    console.log(`Base url: '${req.baseUrl}'`, params, query);
-    return this.usersService.getUser(params.id);
-  }
   @Post('registration')
   async registration(@Body() payload: RegistrationDto) {
     console.log(payload);
@@ -33,6 +28,19 @@ export class UserController {
   @Post('login')
   async login(@Body('user') payload: KeyObject) {
     return this.usersService.login(payload);
+  }
+  @Get()
+  getUsers(): Promise<User[]> {
+    return this.usersService.getUsers();
+  }
+  @Get(':id')
+  getUser(@Req() req, @Param('id', ParseIntPipe) id: number, @Query() query) {
+    console.log(`Base url: '${req.baseUrl}'`, id, query);
+    // if (req.data.demo) {
+    //   // rise 500 error
+    // }
+    // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    return this.usersService.getUser(id);
   }
   @Put(':id')
   async update(@Param() params, @Body('user') payload: KeyObject) {

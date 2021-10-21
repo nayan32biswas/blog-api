@@ -14,7 +14,7 @@ export class UserService {
   getUsers(): Promise<UserEntity[]> {
     return this.usersRepository.find();
   }
-  getUser(id: string): Promise<UserEntity> {
+  getUser(id: number): Promise<UserEntity> {
     return this.usersRepository.findOne(id);
   }
   async delete(id: string): Promise<void> {
