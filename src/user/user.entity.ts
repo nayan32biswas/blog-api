@@ -4,6 +4,9 @@ import { BaseEntity } from '../common/common.entity';
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
   @Column()
+  password: string;
+
+  @Column()
   username: string;
   @Column()
   email: string;

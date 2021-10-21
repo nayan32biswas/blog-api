@@ -8,16 +8,16 @@ import {
   Body,
   Query,
   Req,
-  HttpException,
-  HttpStatus,
-  ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { KeyObject } from '../types/common.type';
 import { RegistrationDto } from './user.dto';
 import { User } from './user.interface';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('user')
+@UseGuards(new AuthGuard())
 export class UserController {
   constructor(private readonly usersService: UserService) {}
   @Post('registration')
@@ -34,13 +34,9 @@ export class UserController {
     return this.usersService.getUsers();
   }
   @Get(':id')
-  getUser(@Req() req, @Param('id', ParseIntPipe) id: number, @Query() query) {
-    console.log(`Base url: '${req.baseUrl}'`, id, query);
-    // if (req.data.demo) {
-    //   // rise 500 error
-    // }
-    // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    return this.usersService.getUser(id);
+  getUser(@Req() req, @Param('id') username: string, @Query() query) {
+    console.log(`Base url: '${req.baseUrl}'`, username, query);
+    return this.usersService.getUser(username);
   }
   @Put(':id')
   async update(@Param() params, @Body('user') payload: KeyObject) {

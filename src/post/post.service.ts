@@ -6,16 +6,16 @@ export class PostService {
   getPosts(): string[] {
     return ['Post one', 'Post tow', 'Post three'];
   }
-  getPost(id: string): KeyObject {
+  getPost(id: number): KeyObject {
     return { id: id };
   }
-  delete(id: string): KeyObject {
+  delete(id: number): KeyObject {
     return { id: id };
   }
   create(data: KeyObject): KeyObject {
     return data;
   }
-  update(id: string, data: KeyObject): KeyObject {
+  update(id: number, data: KeyObject): KeyObject {
     return data;
   }
 }

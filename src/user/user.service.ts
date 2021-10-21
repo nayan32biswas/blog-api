@@ -14,8 +14,8 @@ export class UserService {
   getUsers(): Promise<UserEntity[]> {
     return this.usersRepository.find();
   }
-  getUser(id: number): Promise<UserEntity> {
-    return this.usersRepository.findOne(id);
+  getUser(username: string): Promise<UserEntity> {
+    return this.usersRepository.findOne(username);
   }
   async delete(id: string): Promise<void> {
     await this.usersRepository.delete(id);
