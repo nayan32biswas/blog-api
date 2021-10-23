@@ -22,11 +22,11 @@ export class UserController {
   constructor(private readonly usersService: UserService) {}
   @Post('registration')
   async registration(@Body() payload: RegistrationDto) {
-    console.log(payload);
+    // console.log(payload);
     return this.usersService.registration(payload);
   }
   @Post('login')
-  async login(@Body('user') payload: KeyObject) {
+  async login(@Body() payload: KeyObject) {
     return this.usersService.login(payload);
   }
   @Get()

@@ -1,4 +1,4 @@
-import { Entity, Column, CreateDateColumn } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '../common/common.entity';
 
 @Entity({ name: 'user' })
@@ -6,21 +6,21 @@ export class UserEntity extends BaseEntity {
   @Column()
   password: string;
 
-  @Column()
-  username: string;
-  @Column()
+  @Column({ unique: true })
   email: string;
+  @Column({ unique: true })
+  username: string;
 
   @Column()
   firstName: string;
   @Column()
   lastName: string;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @Column({ type: 'timestamptz', nullable: true })
   birthDate: Date;
 
-  @Column()
+  @Column({ type: 'boolean', default: false })
   isStaff: boolean;
-  @Column()
+  @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 }
