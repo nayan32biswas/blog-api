@@ -2,7 +2,7 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { configService } from './config/config.service';
-import { UserModule } from './user/user.module';
+import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { PostModule } from './post/post.module';
 import { APP_PIPE } from '@nestjs/core';
@@ -11,7 +11,7 @@ import { APP_PIPE } from '@nestjs/core';
   imports: [
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     CommonModule,
-    UserModule,
+    UsersModule,
     PostModule,
   ],
   providers: [

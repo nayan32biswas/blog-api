@@ -1,25 +1,31 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { UserEntity } from './user.entity';
+import { UserEntity } from './users.entity';
 import { KeyObject } from '../types/common.type';
+import { JwtService } from '@nestjs/jwt';
 
 const saltOrRounds = 10;
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    private readonly jwtService: JwtService,
   ) {}
 
   getUsers(): Promise<UserEntity[]> {
     return this.usersRepository.find();
   }
   getUser(username: string): Promise<UserEntity> {
-    return this.usersRepository.findOne(username);
+    return this.usersRepository.findOne({ username: username });
+  }
+  findOne(username: string): Promise<UserEntity> {
+    console.log(username);
+    return this.usersRepository.findOne({ username: username });
   }
   async delete(id: string): Promise<void> {
     await this.usersRepository.delete(id);
@@ -37,23 +43,24 @@ export class UserService {
     await this.usersRepository.save(user);
     return user;
   }
-  async login(data: KeyObject): Promise<KeyObject> {
-    const user = await this.usersRepository.findOne({
-      email: data.user_identity,
-    });
-    if (user === undefined) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.usersRepository.findOne({ username: username });
+    console.log(user);
+    if (!user) return null;
+    const isMatch = await bcrypt.compare(pass, user.password);
+    if (isMatch) {
+      const { password, ...result } = user;
+      console.log(password);
+      return result;
     }
-    const isMatch = await bcrypt.compare(data.password, user.password);
-    if (isMatch === true) {
-      return {
-        message: 'Successful Authentication',
-        token: 'Token',
-        refreshToken: 'refreshToken',
-      };
-    } else {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
+    return null;
+  }
+
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
   update(id: string, data: KeyObject): KeyObject {
     return data;
