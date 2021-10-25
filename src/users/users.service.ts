@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { UserEntity } from './users.entity';
+import { User } from './users.entity';
 import { KeyObject } from '../common/types/common.type';
 import { JwtService } from '@nestjs/jwt';
 import { UserUpdateDto } from './types/users.dto';
@@ -13,14 +13,14 @@ const saltOrRounds = 10;
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
-  async registration(data: KeyObject): Promise<UserEntity> {
+  async registration(data: KeyObject): Promise<User> {
     const hashPass = await bcrypt.hash(data.password, saltOrRounds);
 
-    const user = new UserEntity();
+    const user = new User();
     user.password = hashPass;
     user.email = data.email;
     user.username = data.email.match(/^([^@]*)@/)[1];
@@ -52,7 +52,7 @@ export class UsersService {
     return await this.usersRepository.findOne(id);
   }
 
-  async update(id: string, data: UserUpdateDto): Promise<UserEntity> {
+  async update(id: string, data: UserUpdateDto): Promise<User> {
     const user = await this.usersRepository.findOne(id);
     data.firstName !== user.firstName && (user.firstName = data.firstName);
     data.lastName !== user.lastName && (user.lastName = data.lastName);

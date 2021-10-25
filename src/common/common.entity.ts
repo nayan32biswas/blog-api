@@ -14,7 +14,7 @@ export abstract class BaseEntity extends _BaseEntity {
   isActive: boolean;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  createDateTime: Date;
+  createdAt: Date;
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  lastChangedDateTime: Date;
+  updatedAt: Date;
 }

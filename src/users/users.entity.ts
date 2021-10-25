@@ -1,8 +1,9 @@
-import { Entity, Column } from 'typeorm';
+import { Post } from 'src/posts/posts.entity';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '../common/common.entity';
 
 @Entity({ name: 'user' })
-export class UserEntity extends BaseEntity {
+export class User extends BaseEntity {
   @Column()
   password: string;
 
@@ -23,4 +24,7 @@ export class UserEntity extends BaseEntity {
   isStaff: boolean;
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
+
+  @OneToMany((type) => Post, (photo) => photo.user)
+  posts: Post[];
 }

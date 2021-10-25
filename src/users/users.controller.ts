@@ -8,9 +8,9 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+
 import { UsersService } from './users.service';
 import { RegistrationDto, UserUpdateDto } from './types/users.dto';
-// import { User } from './users.interface';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -34,7 +34,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Put()
   async update(@Request() req, @Body() payload: UserUpdateDto) {
-    console.log(req.user, payload);
     return await this.usersService.update(req.user?.id, payload);
   }
   @UseGuards(JwtAuthGuard)
