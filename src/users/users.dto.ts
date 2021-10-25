@@ -10,3 +10,13 @@ export class RegistrationDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class UserUpdateDto {
+  @IsString()
+  readonly firstName: string;
+  @IsString()
+  readonly lastName: string;
+
+  @IsString()
+  readonly birthDate;
+}

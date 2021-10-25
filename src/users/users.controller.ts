@@ -1,19 +1,15 @@
 import {
   Controller,
   Get,
-  Param,
   Delete,
   Post,
   Put,
   Body,
-  // Query,
-  // Req,
   UseGuards,
   Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { KeyObject } from '../types/common.type';
-import { RegistrationDto } from './users.dto';
+import { RegistrationDto, UserUpdateDto } from './users.dto';
 // import { User } from './users.interface';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -33,8 +29,20 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
+    return this.usersService.getProfile(req.user.id);
   }
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async update(@Request() req, @Body() payload: UserUpdateDto) {
+    console.log(req.user, payload);
+    return await this.usersService.update(req.user?.id, payload);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  delete(@Request() req) {
+    return this.usersService.delete(req.user.id);
+  }
+
   // @Get()
   // getUsers(): Promise<User[]> {
   //   return this.usersService.getUsers();
@@ -44,12 +52,4 @@ export class UsersController {
   //   console.log(`Base url: '${req.baseUrl}'`, username, query);
   //   return this.usersService.getUser(username);
   // }
-  @Put(':id')
-  async update(@Param() params, @Body('user') payload: KeyObject) {
-    return await this.usersService.update(params.id, payload);
-  }
-  @Delete(':id')
-  delete(@Param() params) {
-    return this.usersService.delete(params.id);
-  }
 }
