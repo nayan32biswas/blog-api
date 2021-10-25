@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from './config/config.service';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
-import { PostModule } from './post/post.module';
+import { PostsModule } from './posts/posts.module';
 import { APP_PIPE } from '@nestjs/core';
 
 @Module({
@@ -12,7 +12,7 @@ import { APP_PIPE } from '@nestjs/core';
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     CommonModule,
     UsersModule,
-    PostModule,
+    PostsModule,
   ],
   providers: [
     {

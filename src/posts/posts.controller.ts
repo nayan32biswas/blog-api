@@ -8,12 +8,12 @@ import {
   Put,
   ParseIntPipe,
 } from '@nestjs/common';
-import { PostService } from './post.service';
+import { PostsService } from './posts.service';
 import { KeyObject } from '../common/types/common.type';
 
 @Controller('post')
-export class PostController {
-  constructor(private readonly postService: PostService) {}
+export class PostsController {
+  constructor(private readonly postService: PostsService) {}
 
   @Get()
   getPosts() {

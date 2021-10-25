@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KeyObject } from '../common/types/common.type';
 
 @Injectable()
-export class PostService {
+export class PostsService {
   getPosts(): string[] {
     return ['Post one', 'Post tow', 'Post three'];
   }
