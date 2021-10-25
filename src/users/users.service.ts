@@ -4,9 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { UserEntity } from './users.entity';
-import { KeyObject } from '../types/common.type';
+import { KeyObject } from '../common/types/common.type';
 import { JwtService } from '@nestjs/jwt';
-import { UserUpdateDto } from './users.dto';
+import { UserUpdateDto } from './types/users.dto';
 
 const saltOrRounds = 10;
 

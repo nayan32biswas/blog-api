@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { KeyObject } from '../types/common.type';
+import { KeyObject } from '../common/types/common.type';
 
 @Injectable()
 export class PostService {

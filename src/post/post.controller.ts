@@ -9,7 +9,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { KeyObject } from '../types/common.type';
+import { KeyObject } from '../common/types/common.type';
 
 @Controller('post')
 export class PostController {

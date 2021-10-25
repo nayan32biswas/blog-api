@@ -1,5 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { KeyObject } from '../types/common.type';
+import { KeyObject } from '../common/types/common.type';
 
 export const DEBUG = process.env.DEBUG === 'true';
 if (DEBUG) {
@@ -7,6 +7,8 @@ if (DEBUG) {
 } else {
   console.log('Production Mode');
 }
+
+export const SECRET_KEY = process.env.SECRET_KEY || 'long-secret.key';
 
 export const EMAIL_CONF: KeyObject = {
   host: 'smtp.gmail.com',
