@@ -8,14 +8,14 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { SECRET_KEY } from '../config/config.service';
+import { SECRET_KEY, TOKEN_EXPIRES_IN } from '../config/config.service';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
       secret: SECRET_KEY,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: TOKEN_EXPIRES_IN },
     }),
     TypeOrmModule.forFeature([User]),
   ],

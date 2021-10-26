@@ -14,7 +14,7 @@ import {
 import { PostsService } from './posts.service';
 import { KeyObject } from '../common/types/common.type';
 import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
-import { PostCreateDto } from './types/posts.dto';
+import { PostCreateDto, PostUpdateDto } from './types/posts.dto';
 
 @Controller('post')
 export class PostsController {
@@ -37,7 +37,7 @@ export class PostsController {
   async update(
     @Request() req,
     @Param('slug') slug: string,
-    @Body() data: KeyObject,
+    @Body() data: PostUpdateDto,
   ) {
     return await this.postService.update(req.user.id, slug, data);
   }

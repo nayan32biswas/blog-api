@@ -6,3 +6,10 @@ export class PostCreateDto {
   @IsString()
   content: string;
 }
+
+export class PostUpdateDto {
+  @IsString()
+  title: string;
+  @IsString()
+  content: string;
+}

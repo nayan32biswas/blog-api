@@ -22,8 +22,8 @@ export const EMAIL_CONF: KeyObject = {
 
 export const HOST = process.env.HOST || 'http://localhost:8000';
 export const PAGE_SIZE = 10;
-export const TOKEN_EXPIRES_IN = '1h';
-export const REFRESH_TOKEN_EXPIRES_IN = '72h';
+export const TOKEN_EXPIRES_IN = '7d';
+export const REFRESH_TOKEN_EXPIRES_IN = '30d';
 export const EMAIL_VERIFICATION_EXPIRES_IN = '1h';
 export const JWT_ALGORITHM = 'HS256';
 

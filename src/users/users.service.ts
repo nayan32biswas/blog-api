@@ -54,12 +54,11 @@ export class UsersService {
 
   async update(id: string, data: UserUpdateDto): Promise<User> {
     const user = await this.usersRepository.findOne(id);
+
     data.firstName !== user.firstName && (user.firstName = data.firstName);
     data.lastName !== user.lastName && (user.lastName = data.lastName);
     data.birthDate !== user.birthDate && (user.birthDate = data.birthDate);
-    // Object.keys(data).forEach((key: string) => {
-    //   console.log(key);
-    // });
+
     return await this.usersRepository.save(user);
   }
   async delete(id: number): Promise<void> {

@@ -1,19 +1,13 @@
 import { Tag } from 'src/tags/tags.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinTable,
-  ManyToMany,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
 import { BaseEntity } from '../common/common.entity';
 import { User } from '../users/users.entity';
 
 @Entity({ name: 'post' })
 export class Post extends BaseEntity {
-  @ManyToOne((type) => User, (user) => user.posts)
-  @JoinColumn()
+  @ManyToOne((type) => User, (user) => user.posts, {
+    cascade: true,
+  })
   user: User;
 
   @Column()
