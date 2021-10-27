@@ -15,11 +15,14 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     container_name: nest_blog_server
-    command: yarn start:dev
+    # command: yarn start:dev
+    command: yarn deploy:dev
     environment:
       <<: *server-volume
     ports:
       - '8000:8000'
+    expose:
+      - 8000
     networks:
       - backend-tier
     volumes:
