@@ -14,7 +14,8 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     container_name: nest_blog_server
-    command: yarn start:dev
+    # command: yarn start:dev
+    command: yarn deploy:dev
     env_file:
       - .env
     environment:
