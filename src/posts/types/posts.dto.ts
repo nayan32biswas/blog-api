@@ -2,9 +2,9 @@ import { IsString } from 'class-validator';
 
 export class PostCreateDto {
   @IsString()
-  title: string;
+  readonly title: string;
   @IsString()
-  content: string;
+  readonly content: string;
 }
 
 export class PostUpdateDto {

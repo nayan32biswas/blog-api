@@ -3,24 +3,25 @@ import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { User } from './users.entity';
+import { UserEntity } from './users.entity';
 import { KeyObject } from '../common/types/common.type';
 import { JwtService } from '@nestjs/jwt';
 import { UserUpdateDto } from './types/users.dto';
+import { UserSerializer } from './types/users.serializer';
 
 const saltOrRounds = 10;
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
-  async registration(data: KeyObject): Promise<User> {
+  async registration(data: KeyObject): Promise<UserEntity> {
     const hashPass = await bcrypt.hash(data.password, saltOrRounds);
 
-    const user = new User();
+    const user = new UserEntity();
     user.password = hashPass;
     user.email = data.email;
     user.username = data.email.match(/^([^@]*)@/)[1];
@@ -49,10 +50,11 @@ export class UsersService {
   }
 
   async getProfile(id: number) {
-    return await this.usersRepository.findOne(id);
+    const user = await this.usersRepository.findOne(id);
+    return new UserSerializer(user);
   }
 
-  async update(id: string, data: UserUpdateDto): Promise<User> {
+  async update(id: string, data: UserUpdateDto): Promise<UserEntity> {
     const user = await this.usersRepository.findOne(id);
 
     data.firstName !== user.firstName && (user.firstName = data.firstName);

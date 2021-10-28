@@ -1,24 +1,26 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { KeyObject } from '../common/types/common.type';
-import { Post } from './posts.entity';
+import { PostEntity } from './posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PostCreateDto, PostUpdateDto } from './types/posts.dto';
-import { User } from '../users/users.entity';
+import { UserEntity } from '../users/users.entity';
 import { generateSlug } from '../common/utils/index';
-import { UserUpdateDto } from '../users/types/users.dto';
+import { PostListSerializer } from './types/posts.serializer';
 
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectRepository(Post)
-    private postsRepository: Repository<Post>,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(PostEntity)
+    private postsRepository: Repository<PostEntity>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
   ) {}
 
-  async create(userId: number, postCreateDto: PostCreateDto): Promise<Post> {
-    const post = new Post();
+  async create(
+    userId: number,
+    postCreateDto: PostCreateDto,
+  ): Promise<PostEntity> {
+    const post = new PostEntity();
 
     post.slug = await generateSlug(
       this.postsRepository,
@@ -32,10 +34,11 @@ export class PostsService {
     await this.postsRepository.save(post);
     return post;
   }
-  async getPosts(): Promise<Post[]> {
-    return await this.postsRepository.find();
+  async getPosts(): Promise<PostListSerializer[]> {
+    const posts = await this.postsRepository.find({ relations: ['user'] });
+    return posts.map((post: PostEntity) => new PostListSerializer(post));
   }
-  async getPost(slug: string): Promise<Post> {
+  async getPost(slug: string): Promise<PostEntity> {
     const post = await this.postsRepository.findOne(
       { slug },
       { relations: ['user'] },
@@ -47,7 +50,7 @@ export class PostsService {
     userId: number,
     slug: string,
     data: PostUpdateDto,
-  ): Promise<Post> {
+  ): Promise<PostEntity> {
     const post = await this.postsRepository.findOne(
       { slug },
       { relations: ['user'] },

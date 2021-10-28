@@ -1,14 +1,15 @@
 import { Tag } from 'src/tags/tags.entity';
 import { Entity, Column, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
 import { BaseEntity } from '../common/common.entity';
-import { User } from '../users/users.entity';
+import { UserEntity } from '../users/users.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'post' })
-export class Post extends BaseEntity {
-  @ManyToOne((type) => User, (user) => user.posts, {
+export class PostEntity extends BaseEntity {
+  @ManyToOne((type) => UserEntity, (user) => user.posts, {
     cascade: true,
   })
-  user: User;
+  user: UserEntity;
 
   @Column()
   title: string;
@@ -20,6 +21,7 @@ export class Post extends BaseEntity {
   @Column({ type: 'timestamptz', nullable: true })
   published: Date;
 
+  @Exclude()
   @ManyToMany((type) => Tag)
   @JoinTable()
   tags: Tag[];
@@ -27,8 +29,8 @@ export class Post extends BaseEntity {
 
 @Entity({ name: 'comment' })
 export class Comment extends BaseEntity {
-  @ManyToOne((type) => User)
-  user: User;
+  @ManyToOne((type) => UserEntity)
+  user: UserEntity;
   @Column()
   content: string;
 }

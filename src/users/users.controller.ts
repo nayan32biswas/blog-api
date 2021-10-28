@@ -7,6 +7,8 @@ import {
   Body,
   UseGuards,
   Request,
+  ClassSerializerInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
@@ -27,6 +29,7 @@ export class UsersController {
     return this.usersService.login(req.user);
   }
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('profile')
   getProfile(@Request() req) {
     return this.usersService.getProfile(req.user.id);

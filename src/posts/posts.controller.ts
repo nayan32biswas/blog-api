@@ -9,6 +9,8 @@ import {
   ParseIntPipe,
   UseGuards,
   Request,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 
 import { PostsService } from './posts.service';
@@ -21,9 +23,11 @@ export class PostsController {
   constructor(private readonly postService: PostsService) {}
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Request() req, @Body() postCreateDto: PostCreateDto) {
-    return await this.postService.create(req.user.id, postCreateDto);
+  async create(@Request() req, @Body() body: PostCreateDto) {
+    console.log(body);
+    return await this.postService.create(req.user.id, body);
   }
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getPosts() {
     return this.postService.getPosts();
