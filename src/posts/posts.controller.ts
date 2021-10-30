@@ -6,17 +6,18 @@ import {
   Param,
   Post,
   Put,
-  ParseIntPipe,
   UseGuards,
   Request,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Query,
 } from '@nestjs/common';
 
 import { PostsService } from './posts.service';
-import { KeyObject } from '../common/types/common.type';
 import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
-import { PostCreateDto, PostUpdateDto } from './types/posts.dto';
+import { PostDetailsParams } from './dto/posts.params.dto';
+import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
+import { PostDetailsQuery } from './dto/posts.query.dto';
 
 @Controller('post')
 export class PostsController {
@@ -24,26 +25,28 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Request() req, @Body() body: PostCreateDto) {
-    console.log(body);
     return await this.postService.create(req.user.id, body);
   }
+
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getPosts() {
-    return this.postService.getPosts();
+  getPosts(@Query() query: PostDetailsQuery) {
+    return this.postService.getPosts(query);
   }
+
   @Get(':slug')
   getPost(@Param('slug') slug: string) {
     return this.postService.getPost(slug);
   }
+
   @UseGuards(JwtAuthGuard)
   @Put(':slug')
   async update(
     @Request() req,
-    @Param('slug') slug: string,
+    @Param() params: PostDetailsParams,
     @Body() data: PostUpdateDto,
   ) {
-    return await this.postService.update(req.user.id, slug, data);
+    return await this.postService.update(req.user.id, params.postSlug, data);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -2,10 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PostEntity } from './posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PostCreateDto, PostUpdateDto } from './types/posts.dto';
+import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
 import { UserEntity } from '../users/users.entity';
 import { generateSlug } from '../common/utils/index';
-import { PostListSerializer } from './types/posts.serializer';
+import { PostListSerializer } from './dto/posts.serializer.dto';
+import { PostDetailsQuery } from './dto/posts.query.dto';
 
 @Injectable()
 export class PostsService {
@@ -31,10 +32,11 @@ export class PostsService {
     post.content = postCreateDto.content;
     post.user = await this.usersRepository.findOne(userId);
 
-    await this.postsRepository.save(post);
+    // await this.postsRepository.save(post);
     return post;
   }
-  async getPosts(): Promise<PostListSerializer[]> {
+  async getPosts(query: PostDetailsQuery): Promise<PostListSerializer[]> {
+    console.log(query);
     const posts = await this.postsRepository.find({ relations: ['user'] });
     return posts.map((post: PostEntity) => new PostListSerializer(post));
   }
