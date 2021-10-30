@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Query,
+  UploadedFiles,
 } from '@nestjs/common';
 
 import { PostsService } from './posts.service';
@@ -18,13 +19,28 @@ import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
 import { PostDetailsParams } from './dto/posts.params.dto';
 import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
 import { PostDetailsQuery } from './dto/posts.query.dto';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { imgFileFilter, storage } from '../common/filter/file.filter';
 
 @Controller('post')
 export class PostsController {
   constructor(private readonly postService: PostsService) {}
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'image', maxCount: 1 }], {
+      fileFilter: imgFileFilter,
+      storage: storage,
+    }),
+  )
   @Post()
-  async create(@Request() req, @Body() body: PostCreateDto) {
+  async create(
+    @Request() req,
+    @Body() body: PostCreateDto,
+    @UploadedFiles()
+    files: { image?: Express.Multer.File[] },
+  ) {
+    console.log(JSON.stringify(files));
+    console.log(body);
     return await this.postService.create(req.user.id, body);
   }
 
