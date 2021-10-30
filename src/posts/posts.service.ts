@@ -41,7 +41,26 @@ export class PostsService {
   }
   async getPosts(query: PostDetailsQuery): Promise<PostListSerializer[]> {
     console.log(query);
-    const posts = await this.postsRepository.find({ relations: ['user'] });
+    let queryBuilder = this.postsRepository.createQueryBuilder();
+    if (query.offset) {
+      queryBuilder = queryBuilder.offset(query.offset);
+    }
+    if (query.q) {
+      queryBuilder = queryBuilder.where(
+        'PostEntity.slug = :slug OR PostEntity.title LIKE :title',
+        {
+          slug: `%${query.q}%`,
+          title: `%${query.q}%`,
+        },
+      );
+    }
+    if (query.limit) {
+      queryBuilder = queryBuilder.limit(query.limit);
+    }
+    queryBuilder.innerJoinAndSelect('PostEntity.user', 'user');
+
+    // const posts = await this.postsRepository.find({ relations: ['user'] });
+    const posts = await queryBuilder.getMany();
     return posts.map((post: PostEntity) => new PostListSerializer(post));
   }
   async getPost(slug: string): Promise<PostEntity> {

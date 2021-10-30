@@ -39,8 +39,3 @@ export class Comment extends BaseEntity {
   @Column()
   content: string;
 }
-
-class demo {
-  static demo = 'data';
-  value;
-}
