@@ -1,12 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PostEntity } from './posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
-import { UserEntity } from '../users/users.entity';
+
 import { generateSlug } from '../common/utils/index';
+import { UserEntity } from '../users/users.entity';
+import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
 import { PostListSerializer } from './dto/posts.serializer.dto';
 import { PostDetailsQuery } from './dto/posts.query.dto';
+import { PostEntity } from './posts.entity';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +21,7 @@ export class PostsService {
   async create(
     userId: number,
     postCreateDto: PostCreateDto,
+    image: Express.Multer.File | undefined,
   ): Promise<PostEntity> {
     const post = new PostEntity();
 
@@ -30,9 +32,11 @@ export class PostsService {
     );
     post.title = postCreateDto.title;
     post.content = postCreateDto.content;
+    if (image?.path) {
+      post.image = image['path'];
+    }
     post.user = await this.usersRepository.findOne(userId);
-
-    // await this.postsRepository.save(post);
+    await this.postsRepository.save(post);
     return post;
   }
   async getPosts(query: PostDetailsQuery): Promise<PostListSerializer[]> {

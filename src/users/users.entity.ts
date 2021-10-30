@@ -1,7 +1,8 @@
 import { PostEntity } from 'src/posts/posts.entity';
 import { Entity, Column, OneToMany } from 'typeorm';
-import { BaseEntity } from '../common/common.entity';
 import { Exclude, Expose } from 'class-transformer';
+
+import { BaseEntity } from '../common/common.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {

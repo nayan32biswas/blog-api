@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
-import { UserEntity } from './users.entity';
-import { KeyObject } from '../common/types/common.type';
 import { JwtService } from '@nestjs/jwt';
+
+import { KeyObject } from '../common/types/common.type';
+import { UserEntity } from './users.entity';
 import { UserUpdateDto } from './types/users.dto';
 import { UserSerializer } from './types/users.serializer';
 

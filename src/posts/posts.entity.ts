@@ -1,8 +1,9 @@
-import { Tag } from 'src/tags/tags.entity';
+import { Exclude } from 'class-transformer';
 import { Entity, Column, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
+
+import { Tag } from 'src/tags/tags.entity';
 import { BaseEntity } from '../common/common.entity';
 import { UserEntity } from '../users/users.entity';
-import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'post' })
 export class PostEntity extends BaseEntity {
@@ -17,6 +18,10 @@ export class PostEntity extends BaseEntity {
   slug: string;
   @Column('text')
   content: string;
+
+  @Column({ nullable: true })
+  image: string;
+  static imageField = 'image';
 
   @Column({ type: 'timestamptz', nullable: true })
   published: Date;
@@ -33,4 +38,9 @@ export class Comment extends BaseEntity {
   user: UserEntity;
   @Column()
   content: string;
+}
+
+class demo {
+  static demo = 'data';
+  value;
 }

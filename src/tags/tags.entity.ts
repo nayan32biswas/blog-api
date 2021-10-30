@@ -1,4 +1,5 @@
 import { Entity, Column } from 'typeorm';
+
 import { BaseEntity } from '../common/common.entity';
 
 @Entity({ name: 'tag' })
