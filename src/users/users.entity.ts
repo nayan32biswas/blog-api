@@ -3,6 +3,7 @@ import { Entity, Column, OneToMany } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
 
 import { BaseEntity } from '../common/common.entity';
+import { KeyObject } from '../common/types/common.type';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
@@ -36,4 +37,8 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany((type) => PostEntity, (photo) => photo.user)
   posts: PostEntity[];
+
+  static async getUser(query: KeyObject) {
+    return await this.getRepository().findOne(query);
+  }
 }

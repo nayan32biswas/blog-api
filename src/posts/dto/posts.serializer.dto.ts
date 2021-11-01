@@ -1,6 +1,7 @@
 import { Exclude, Transform, Expose } from 'class-transformer';
 
 import { UserMinimalSerializer } from '../../users/types/users.serializer';
+import { TagEntity } from '../../tags/tags.entity';
 
 @Exclude()
 export class PostListSerializer {
@@ -14,6 +15,28 @@ export class PostListSerializer {
   user: UserMinimalSerializer;
 
   constructor(partial: Partial<PostListSerializer>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class PostDetailsSerializer {
+  // Export all data
+  id: number;
+  @Exclude()
+  updatedAt: Date;
+
+  @Expose()
+  @Transform(({ value }) => {
+    console.log('user', value);
+    return new UserMinimalSerializer(value);
+  })
+  user: UserMinimalSerializer;
+
+  @Expose()
+  @Transform(({ value }) => value.map((tag: TagEntity) => tag.name))
+  tags: TagEntity[];
+
+  constructor(partial: Partial<PostDetailsSerializer>) {
     Object.assign(this, partial);
   }
 }

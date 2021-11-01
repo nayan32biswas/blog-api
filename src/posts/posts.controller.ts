@@ -16,7 +16,8 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as _ from 'lodash';
 
-import { imgFileFilter, storage } from '../common/filter/file.filter';
+import { storage } from '../common/file.handler';
+import { imgFileFilter } from '../common/filter/file.filter';
 import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { PostDetailsParams } from './dto/posts.params.dto';
@@ -47,8 +48,6 @@ export class PostsController {
     @UploadedFiles()
     files: { [postImage]?: Express.Multer.File[] },
   ) {
-    console.log(JSON.stringify(files));
-    console.log(body);
     return await this.postService.create(
       req.user.id,
       body,
@@ -62,6 +61,7 @@ export class PostsController {
     return this.postService.getPosts(query);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':slug')
   getPost(@Param('slug') slug: string) {
     return this.postService.getPost(slug);

@@ -1,10 +1,14 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class PostCreateDto {
   @IsString()
-  readonly title: string;
+  title: string;
   @IsString()
-  readonly content: string;
+  content: string;
+
+  @IsOptional()
+  @IsArray()
+  tags: Array<string>;
 }
 
 export class PostUpdateDto {

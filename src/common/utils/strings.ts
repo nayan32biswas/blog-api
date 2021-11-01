@@ -7,5 +7,7 @@ export const randomString = (N = 5) => {
   return result;
 };
 
+export const toAlphabet = (str: string) => str.replace(/[^\w]+/gi, '');
+
 export const slugify = (str: string) =>
   str.replace(/[^\w]+/gi, '-').toLowerCase();

@@ -4,8 +4,12 @@ import { Repository } from 'typeorm';
 
 import { generateSlug } from '../common/utils/index';
 import { UserEntity } from '../users/users.entity';
+import { TagEntity } from '../tags/tags.entity';
 import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
-import { PostListSerializer } from './dto/posts.serializer.dto';
+import {
+  PostListSerializer,
+  PostDetailsSerializer,
+} from './dto/posts.serializer.dto';
 import { PostDetailsQuery } from './dto/posts.query.dto';
 import { PostEntity } from './posts.entity';
 
@@ -14,36 +18,47 @@ export class PostsService {
   constructor(
     @InjectRepository(PostEntity)
     private postsRepository: Repository<PostEntity>,
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
   ) {}
 
   async create(
     userId: number,
-    postCreateDto: PostCreateDto,
+    body: PostCreateDto,
     image: Express.Multer.File | undefined,
   ): Promise<PostEntity> {
     const post = new PostEntity();
 
-    post.slug = await generateSlug(
-      this.postsRepository,
-      postCreateDto.title,
-      'slug',
-    );
-    post.title = postCreateDto.title;
-    post.content = postCreateDto.content;
+    post.slug = await generateSlug(this.postsRepository, body.title, 'slug');
+    post.title = body.title;
+    post.content = body.content;
     if (image?.path) {
-      post.image = image['path'];
+      post.image = image.path;
     }
-    post.user = await this.usersRepository.findOne(userId);
+    // body.tags = ['One', 'Two', 'three'];
+    if (body.tags) {
+      const finalTags = await TagEntity.createOrGetTags(body.tags);
+      post.tags = finalTags;
+    }
+    post.user = await UserEntity.getUser({ id: userId });
     await this.postsRepository.save(post);
     return post;
   }
   async getPosts(query: PostDetailsQuery): Promise<PostListSerializer[]> {
-    console.log(query);
     let queryBuilder = this.postsRepository.createQueryBuilder();
     if (query.offset) {
       queryBuilder = queryBuilder.offset(query.offset);
+    }
+    if (query.tag) {
+      queryBuilder = queryBuilder.innerJoin(
+        'PostEntity.tags',
+        'TagEntity',
+        'TagEntity.name = :tag',
+        { tag: query.tag },
+      );
+    }
+    if (query.username) {
+      queryBuilder = queryBuilder
+        .leftJoinAndSelect('PostEntity.user', 'UserEntity')
+        .where('UserEntity.username = :username', { username: query.username });
     }
     if (query.q) {
       queryBuilder = queryBuilder.where(
@@ -58,17 +73,15 @@ export class PostsService {
       queryBuilder = queryBuilder.limit(query.limit);
     }
     queryBuilder.innerJoinAndSelect('PostEntity.user', 'user');
-
-    // const posts = await this.postsRepository.find({ relations: ['user'] });
     const posts = await queryBuilder.getMany();
     return posts.map((post: PostEntity) => new PostListSerializer(post));
   }
-  async getPost(slug: string): Promise<PostEntity> {
+  async getPost(slug: string): Promise<PostDetailsSerializer> {
     const post = await this.postsRepository.findOne(
       { slug },
-      { relations: ['user'] },
+      { relations: ['user', 'tags'] },
     );
-    return post;
+    return new PostDetailsSerializer(post);
   }
 
   async update(

@@ -6,4 +6,10 @@ export class PostDetailsQuery extends PaginationQuery {
   @IsOptional()
   @IsString()
   q: string;
+  @IsOptional()
+  @IsString()
+  tag: string;
+  @IsOptional()
+  @IsString()
+  username: string;
 }

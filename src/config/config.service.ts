@@ -28,7 +28,7 @@ export const REFRESH_TOKEN_EXPIRES_IN = '30d';
 export const EMAIL_VERIFICATION_EXPIRES_IN = '1h';
 export const JWT_ALGORITHM = 'HS256';
 export const DEFAULT_LIMIT = 20;
-export const MEDIA_ROOT = './media';
+export const MEDIA_ROOT = './media/';
 
 class ConfigService {
   public getTypeOrmConfig(): TypeOrmModuleOptions {
