@@ -22,20 +22,21 @@ export class PostsService {
 
   async create(
     userId: number,
-    body: PostCreateDto,
+    postData: PostCreateDto,
     image: Express.Multer.File | undefined,
   ): Promise<PostEntity> {
+    const { title, content, tags } = postData;
     const post = new PostEntity();
 
-    post.slug = await generateSlug(this.postsRepository, body.title, 'slug');
-    post.title = body.title;
-    post.content = body.content;
+    post.slug = await generateSlug(this.postsRepository, title, 'slug');
+    post.title = title;
+    post.content = content;
     if (image?.path) {
       post.image = image.path;
     }
-    // body.tags = ['One', 'Two', 'three'];
-    if (body.tags) {
-      const finalTags = await TagEntity.createOrGetTags(body.tags);
+    // tags = ['One', 'Two', 'three'];
+    if (tags) {
+      const finalTags = await TagEntity.createOrGetTags(tags);
       post.tags = finalTags;
     }
     post.user = await UserEntity.getUser({ id: userId });
@@ -58,10 +59,12 @@ export class PostsService {
     if (query.username) {
       queryBuilder = queryBuilder
         .leftJoinAndSelect('PostEntity.user', 'UserEntity')
-        .where('UserEntity.username = :username', { username: query.username });
+        .andWhere('UserEntity.username = :username', {
+          username: query.username,
+        });
     }
     if (query.q) {
-      queryBuilder = queryBuilder.where(
+      queryBuilder = queryBuilder.andWhere(
         'PostEntity.slug = :slug OR PostEntity.title LIKE :title',
         {
           slug: `%${query.q}%`,
@@ -87,8 +90,9 @@ export class PostsService {
   async update(
     userId: number,
     slug: string,
-    data: PostUpdateDto,
+    postData: PostUpdateDto,
   ): Promise<PostEntity> {
+    const { title, content } = postData;
     const post = await this.postsRepository.findOne(
       { slug },
       { relations: ['user'] },
@@ -99,8 +103,8 @@ export class PostsService {
     } else if (post.user.id !== userId) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     } else {
-      data.title !== post.title && (post.title = data.title);
-      data.content !== post.content && (post.content = data.content);
+      title !== post.title && (post.title = title);
+      content !== post.content && (post.content = content);
       return await this.postsRepository.save(post);
     }
   }

@@ -18,15 +18,17 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
-  async registration(data: KeyObject): Promise<UserEntity> {
-    const hashPass = await bcrypt.hash(data.password, saltOrRounds);
+  async registration(userData: KeyObject): Promise<UserEntity> {
+    const { password, email, firstName, lastName } = userData;
+
+    const hashPass = await bcrypt.hash(password, saltOrRounds);
 
     const user = new UserEntity();
     user.password = hashPass;
-    user.email = data.email;
-    user.username = data.email.match(/^([^@]*)@/)[1];
-    user.firstName = data.firstName;
-    user.lastName = data.lastName;
+    user.email = email;
+    user.username = email.match(/^([^@]*)@/)[1];
+    user.firstName = firstName;
+    user.lastName = lastName;
 
     await this.usersRepository.save(user);
     return user;
@@ -54,12 +56,14 @@ export class UsersService {
     return new UserSerializer(user);
   }
 
-  async update(id: string, data: UserUpdateDto): Promise<UserEntity> {
+  async update(id: string, userData: UserUpdateDto): Promise<UserEntity> {
+    const { firstName, lastName, birthDate } = userData;
+
     const user = await this.usersRepository.findOne(id);
 
-    data.firstName !== user.firstName && (user.firstName = data.firstName);
-    data.lastName !== user.lastName && (user.lastName = data.lastName);
-    data.birthDate !== user.birthDate && (user.birthDate = data.birthDate);
+    firstName !== user.firstName && (user.firstName = firstName);
+    lastName !== user.lastName && (user.lastName = lastName);
+    birthDate !== user.birthDate && (user.birthDate = birthDate);
 
     return await this.usersRepository.save(user);
   }
