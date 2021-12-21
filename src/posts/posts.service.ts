@@ -10,7 +10,7 @@ import {
   PostListSerializer,
   PostDetailsSerializer,
 } from './dto/posts.serializer.dto';
-import { PostDetailsQuery } from './dto/posts.query.dto';
+import { PostListQuery } from './dto/posts.query.dto';
 import { PostEntity } from './posts.entity';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class PostsService {
     await this.postsRepository.save(post);
     return post;
   }
-  async getPosts(query: PostDetailsQuery): Promise<PostListSerializer[]> {
+  async getPosts(query: PostListQuery): Promise<PostListSerializer[]> {
     let queryBuilder = this.postsRepository.createQueryBuilder();
     if (query.offset) {
       queryBuilder = queryBuilder.offset(query.offset);
@@ -73,7 +73,8 @@ export class PostsService {
       );
     }
     if (query.limit) {
-      queryBuilder = queryBuilder.limit(query.limit);
+      const limit = Math.min(query.limit, 50);
+      queryBuilder = queryBuilder.limit(limit);
     }
     queryBuilder.innerJoinAndSelect('PostEntity.user', 'user');
     const posts = await queryBuilder.getMany();

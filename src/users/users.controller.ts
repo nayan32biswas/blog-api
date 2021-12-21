@@ -9,12 +9,14 @@ import {
   Request,
   ClassSerializerInterceptor,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { RegistrationDto, UserUpdateDto } from './types/users.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { PostListQuery } from '../posts/dto/posts.query.dto';
 
 @Controller('user')
 export class UsersController {
@@ -54,4 +56,11 @@ export class UsersController {
   //   console.log(`Base url: '${req.baseUrl}'`, username, query);
   //   return this.usersService.getUser(username);
   // }
+
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('posts')
+  async gerUserPost(@Request() req, @Query() query: PostListQuery) {
+    return await this.usersService.getUserPosts(req.user.id, query);
+  }
 }

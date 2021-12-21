@@ -1,5 +1,12 @@
 import { Exclude } from 'class-transformer';
-import { Entity, Column, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 
 import { TagEntity } from 'src/tags/tags.entity';
 import { BaseEntity } from '../common/common.entity';
@@ -30,12 +37,22 @@ export class PostEntity extends BaseEntity {
   @ManyToMany((type) => TagEntity)
   @JoinTable()
   tags: TagEntity[];
+
+  @OneToMany((type) => CommentEntity, (comment) => comment.post)
+  comments: CommentEntity[];
+
+  // static getEntityRepository() {
+  //   return this.getRepository();
+  // }
 }
 
 @Entity({ name: 'comment' })
-export class Comment extends BaseEntity {
+export class CommentEntity extends BaseEntity {
   @ManyToOne((type) => UserEntity)
   user: UserEntity;
+  @ManyToOne((type) => PostEntity)
+  post: PostEntity;
+
   @Column()
   content: string;
 }

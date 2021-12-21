@@ -35,7 +35,7 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 
-  @OneToMany((type) => PostEntity, (photo) => photo.user)
+  @OneToMany((type) => PostEntity, (post) => post.user)
   posts: PostEntity[];
 
   static async getUser(query: KeyObject) {

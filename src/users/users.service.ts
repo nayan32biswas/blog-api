@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Connection } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 import { KeyObject } from '../common/types/common.type';
 import { UserEntity } from './users.entity';
 import { UserUpdateDto } from './types/users.dto';
 import { UserSerializer } from './types/users.serializer';
+import { PostListQuery } from '../posts/dto/posts.query.dto';
+import { PostListSerializer } from '../posts/dto/posts.serializer.dto';
+import { PostEntity } from '../posts/posts.entity';
 
 const saltOrRounds = 10;
 
@@ -70,5 +73,46 @@ export class UsersService {
   async delete(id: number): Promise<void> {
     const user = await this.usersRepository.findOne(id);
     this.usersRepository.remove(user);
+  }
+
+  async getUserPosts(
+    userId: number,
+    query: PostListQuery,
+  ): Promise<PostListSerializer[]> {
+    // let queryBuilder = this.postsRepository.createQueryBuilder();
+    let queryBuilder = PostEntity.getRepository().createQueryBuilder();
+    if (query.offset) {
+      queryBuilder = queryBuilder.offset(query.offset);
+    }
+    if (query.tag) {
+      queryBuilder = queryBuilder.innerJoin(
+        'PostEntity.tags',
+        'TagEntity',
+        'TagEntity.name = :tag',
+        { tag: query.tag },
+      );
+    }
+    queryBuilder = queryBuilder
+      .leftJoinAndSelect('PostEntity.user', 'UserEntity')
+      .andWhere('UserEntity.id = :id', {
+        id: userId,
+      });
+
+    if (query.q) {
+      queryBuilder = queryBuilder.andWhere(
+        'PostEntity.slug = :slug OR PostEntity.title LIKE :title',
+        {
+          slug: `%${query.q}%`,
+          title: `%${query.q}%`,
+        },
+      );
+    }
+    if (query.limit) {
+      const limit = Math.min(query.limit, 50);
+      queryBuilder = queryBuilder.limit(limit);
+    }
+    queryBuilder.innerJoinAndSelect('PostEntity.user', 'user');
+    const posts = await queryBuilder.getMany();
+    return posts.map((post: PostEntity) => new PostListSerializer(post));
   }
 }

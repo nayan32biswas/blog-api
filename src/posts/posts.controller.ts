@@ -22,7 +22,7 @@ import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { PostDetailsParams } from './dto/posts.params.dto';
 import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
-import { PostDetailsQuery } from './dto/posts.query.dto';
+import { PostListQuery } from './dto/posts.query.dto';
 import { PostEntity } from './posts.entity';
 
 const postImage = 'image';
@@ -57,7 +57,7 @@ export class PostsController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getPosts(@Query() query: PostDetailsQuery) {
+  getPosts(@Query() query: PostListQuery) {
     return this.postService.getPosts(query);
   }
 
