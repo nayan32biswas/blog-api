@@ -23,6 +23,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post('registration')
   async registration(@Body() payload: RegistrationDto) {
+    console.log(payload);
     return this.usersService.registration(payload);
   }
   @UseGuards(LocalAuthGuard)
@@ -37,6 +38,7 @@ export class UsersController {
     return this.usersService.getProfile(req.user.id);
   }
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Put()
   async update(@Request() req, @Body() payload: UserUpdateDto) {
     return await this.usersService.update(req.user?.id, payload);
@@ -46,16 +48,6 @@ export class UsersController {
   delete(@Request() req) {
     return this.usersService.delete(req.user.id);
   }
-
-  // @Get()
-  // getUsers(): Promise<User[]> {
-  //   return this.usersService.getUsers();
-  // }
-  // @Get(':id')
-  // getUser(@Req() req, @Param('id') username: string, @Query() query) {
-  //   console.log(`Base url: '${req.baseUrl}'`, username, query);
-  //   return this.usersService.getUser(username);
-  // }
 
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)

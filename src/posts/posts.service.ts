@@ -85,6 +85,9 @@ export class PostsService {
       { slug },
       { relations: ['user', 'tags'] },
     );
+    if (!post) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
     return new PostDetailsSerializer(post);
   }
 

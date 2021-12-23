@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Connection } from 'typeorm';
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 import { KeyObject } from '../common/types/common.type';
@@ -22,7 +22,15 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
   async registration(userData: KeyObject): Promise<UserEntity> {
-    const { password, email, firstName, lastName } = userData;
+    const { password, email, firstName, lastName, role } = userData;
+
+    const previousUser = await this.usersRepository.findOne({ email: email });
+    if (previousUser) {
+      throw new HttpException(
+        'User already exists with this email',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     const hashPass = await bcrypt.hash(password, saltOrRounds);
 
@@ -32,6 +40,7 @@ export class UsersService {
     user.username = email.match(/^([^@]*)@/)[1];
     user.firstName = firstName;
     user.lastName = lastName;
+    user.role = role;
 
     await this.usersRepository.save(user);
     return user;

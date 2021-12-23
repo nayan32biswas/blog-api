@@ -6,6 +6,11 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  TreeChildren,
+  TreeParent,
+  Tree,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { TagEntity } from 'src/tags/tags.entity';
@@ -41,12 +46,22 @@ export class PostEntity extends BaseEntity {
   @OneToMany((type) => CommentEntity, (comment) => comment.post)
   comments: CommentEntity[];
 
-  // static getEntityRepository() {
-  //   return this.getRepository();
-  // }
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  updatedAt: Date;
 }
 
 @Entity({ name: 'comment' })
+@Tree('closure-table')
 export class CommentEntity extends BaseEntity {
   @ManyToOne((type) => UserEntity)
   user: UserEntity;
@@ -55,4 +70,57 @@ export class CommentEntity extends BaseEntity {
 
   @Column()
   content: string;
+
+  @TreeChildren()
+  children: CommentEntity[];
+
+  @TreeParent()
+  parent: CommentEntity;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  updatedAt: Date;
+}
+
+export enum VoteType {
+  UPVOTE = 'U',
+  DOWNVOTE = 'D',
+}
+
+@Entity({ name: 'post_vote' })
+export class PostVoteEntity extends BaseEntity {
+  @ManyToOne((type) => UserEntity)
+  user: UserEntity;
+  @ManyToOne((type) => PostEntity)
+  post: PostEntity;
+
+  @Column({
+    type: 'enum',
+    enum: VoteType,
+    default: VoteType.UPVOTE,
+  })
+  type: VoteType;
+}
+@Entity({ name: 'comment_vote' })
+export class CommentVoteEntity extends BaseEntity {
+  @ManyToOne((type) => UserEntity)
+  user: UserEntity;
+  @ManyToOne((type) => CommentEntity)
+  comment: CommentEntity;
+
+  @Column({
+    type: 'enum',
+    enum: VoteType,
+    default: VoteType.UPVOTE,
+  })
+  type: VoteType;
 }

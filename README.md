@@ -18,7 +18,7 @@
 
 ### Commnet
 - User should able to create/update comment.
-- Post should be able to delete the comment.
+- Post owner should be able to delete the comment.
 - Child comments should be deleted when parent comment was delete.
 
 ### Vote
