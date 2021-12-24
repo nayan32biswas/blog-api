@@ -1,7 +1,7 @@
 import { Exclude, Transform, Expose } from 'class-transformer';
 
 import { UserMinimalSerializer } from '../../users/types/users.serializer';
-import { TagEntity } from '../../tags/tags.entity';
+import { TagEntity } from '../posts.entity';
 
 @Exclude()
 export class PostListSerializer {

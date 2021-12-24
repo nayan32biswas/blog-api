@@ -39,7 +39,7 @@ export class UsersController {
   }
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  @Put()
+  @Put('profile')
   async update(@Request() req, @Body() payload: UserUpdateDto) {
     return await this.usersService.update(req.user?.id, payload);
   }

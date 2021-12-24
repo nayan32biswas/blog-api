@@ -4,14 +4,13 @@ import { Repository } from 'typeorm';
 
 import { generateSlug } from '../common/utils/index';
 import { UserEntity } from '../users/users.entity';
-import { TagEntity } from '../tags/tags.entity';
 import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
 import {
   PostListSerializer,
   PostDetailsSerializer,
 } from './dto/posts.serializer.dto';
 import { PostListQuery } from './dto/posts.query.dto';
-import { PostEntity } from './posts.entity';
+import { PostEntity, TagEntity } from './posts.entity';
 
 @Injectable()
 export class PostsService {

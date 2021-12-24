@@ -1,0 +1,46 @@
+{
+  "users": {
+    "/user/registration/": [["post", "OK"]],
+    "/user/login/": [["post", "OK"]],
+    "/user/profile/": [
+      ["get", "OK"],
+      ["put", "OK"]
+    ],
+    "/user/change_password/": [["patch", "No implementation"]],
+    "/user/reset_password/": [["patch", "No implementation"]],
+    "/user/posts/": [["get", "Partial implementation"]]
+  },
+  "posts": {
+    "/post/": [
+      ["post", "Partial implementation"],
+      ["get", "Partial implementation"]
+    ],
+    "/post/<slug>/": [
+      ["get", "Partial implementation"],
+      ["put", "Partial implementation"],
+      ["delete", "Partial implementation"]
+    ],
+    "/post/<slug>/vote/": [
+      ["post", "No implementation"],
+      ["put", "No implementation"],
+      ["delete", "No implementation"]
+    ],
+    "/post/<slug>/comments/": [
+      ["post", "No implementation"],
+      ["get", "Partial implementation"]
+    ],
+    "/post/<slug>/comments/<id>/": [
+      ["get", "No implementation"],
+      ["put", "No implementation"],
+      ["delete", "No implementation"]
+    ],
+    "/post/<slug>/comments/<id>/vote/": [
+      ["post", "No implementation"],
+      ["put", "No implementation"],
+      ["delete", "No implementation"]
+    ]
+  },
+  "message": {
+    "/message/": [["network upgrade call"]]
+  }
+}
