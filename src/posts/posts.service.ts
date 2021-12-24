@@ -49,9 +49,12 @@ export class PostsService {
   }
   async getPosts(query: PostListQuery): Promise<PostListSerializer[]> {
     let queryBuilder = this.postsRepository.createQueryBuilder();
-    if (query.offset) {
-      queryBuilder = queryBuilder.offset(query.offset);
-    }
+    const timeNow = new Date();
+    queryBuilder = queryBuilder.andWhere(
+      `((PostEntity.publishedAt IS NULL AND PostEntity.isPublished = true) OR (PostEntity.publishedAt IS NOT NULL AND PostEntity.publishedAt <= :publishedAt))`,
+      { publishedAt: timeNow },
+    );
+
     if (query.tag) {
       queryBuilder = queryBuilder.innerJoin(
         'PostEntity.tags',
@@ -63,18 +66,22 @@ export class PostsService {
     if (query.username) {
       queryBuilder = queryBuilder
         .leftJoinAndSelect('PostEntity.user', 'UserEntity')
-        .andWhere('UserEntity.username = :username', {
-          username: query.username,
+        .andWhere('UserEntity.username LIKE :username', {
+          username: `%${query.username}%`,
         });
     }
     if (query.q) {
       queryBuilder = queryBuilder.andWhere(
-        'PostEntity.slug = :slug OR PostEntity.title LIKE :title',
+        '(PostEntity.slug = :slug OR PostEntity.title LIKE :title)',
         {
-          slug: `%${query.q}%`,
+          slug: query.q,
           title: `%${query.q}%`,
         },
       );
+    }
+
+    if (query.offset) {
+      queryBuilder = queryBuilder.offset(query.offset);
     }
     if (query.limit) {
       const limit = Math.min(query.limit, 50);

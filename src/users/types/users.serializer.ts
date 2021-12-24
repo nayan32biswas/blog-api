@@ -28,6 +28,7 @@ export class UserMinimalSerializer {
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
   }
+  @Expose() picture: string;
 
   constructor(partial: Partial<UserSerializer>) {
     Object.assign(this, partial);

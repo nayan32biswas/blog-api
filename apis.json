@@ -6,14 +6,14 @@
       ["get", "OK"],
       ["put", "OK"]
     ],
-    "/user/change_password/": [["patch", "No implementation"]],
-    "/user/reset_password/": [["patch", "No implementation"]],
+    "/user/password_change/": [["patch", "No implementation"]],
+    "/user/password_reset/": [["patch", "No implementation"]],
     "/user/posts/": [["get", "Partial implementation"]]
   },
   "posts": {
     "/post/": [
-      ["post", "Partial implementation"],
-      ["get", "Partial implementation"]
+      ["post", "OK"],
+      ["get", "OK"]
     ],
     "/post/<slug>/": [
       ["get", "Partial implementation"],

@@ -36,6 +36,10 @@ export class UserEntity extends BaseEntity {
     return `${this.firstName} ${this.lastName}`;
   }
 
+  @Column({ nullable: true })
+  picture: string;
+  static pictureField = 'picture';
+
   @Column({ type: 'timestamptz', nullable: true })
   birthDate: Date;
 
