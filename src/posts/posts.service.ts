@@ -24,9 +24,10 @@ export class PostsService {
     postData: PostCreateDto,
     image: Express.Multer.File | undefined,
   ): Promise<PostEntity> {
-    const { title, content, tags } = postData;
+    const { title, content, tags, isPublished, publishedAt } = postData;
     const post = new PostEntity();
 
+    // Assign start
     post.slug = await generateSlug(this.postsRepository, title, 'slug');
     post.title = title;
     post.content = content;
@@ -38,7 +39,11 @@ export class PostsService {
       const finalTags = await TagEntity.createOrGetTags(tags);
       post.tags = finalTags;
     }
+    isPublished !== undefined && (post.isPublished = isPublished);
+    publishedAt !== undefined && (post.publishedAt = publishedAt);
     post.user = await UserEntity.getUser({ id: userId });
+    // Assign end
+
     await this.postsRepository.save(post);
     return post;
   }
@@ -94,8 +99,8 @@ export class PostsService {
     userId: number,
     slug: string,
     postData: PostUpdateDto,
-  ): Promise<PostEntity> {
-    const { title, content } = postData;
+    image: Express.Multer.File | undefined,
+  ): Promise<PostDetailsSerializer> {
     const post = await this.postsRepository.findOne(
       { slug },
       { relations: ['user'] },
@@ -106,9 +111,22 @@ export class PostsService {
     } else if (post.user.id !== userId) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     } else {
-      title !== post.title && (post.title = title);
-      content !== post.content && (post.content = content);
-      return await this.postsRepository.save(post);
+      const { title, content, isPublished, publishedAt } = postData;
+
+      if (image && image?.path) {
+        post.image = image.path;
+      }
+      if (title !== undefined) title !== post.title && (post.title = title);
+      if (content !== undefined)
+        content !== post.content && (post.content = content);
+      isPublished !== undefined && (post.isPublished = isPublished);
+      publishedAt !== undefined && (post.publishedAt = publishedAt);
+      await this.postsRepository.save(post);
+      const updatePost = await this.postsRepository.findOne(
+        { slug },
+        { relations: ['user', 'tags'] },
+      );
+      return new PostDetailsSerializer(updatePost);
     }
   }
   async delete(userId: number, slug: string) {

@@ -67,7 +67,10 @@ export class PostEntity extends BaseEntity {
   static imageField = 'image';
 
   @Column({ type: 'timestamptz', nullable: true })
-  published: Date;
+  publishedAt: Date;
+
+  @Column({ default: false })
+  isPublished: boolean;
 
   @Exclude()
   @ManyToMany((type) => TagEntity)

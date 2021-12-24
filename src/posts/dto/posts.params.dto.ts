@@ -4,9 +4,9 @@ export class PostDetailsParams {
   // @IsDefined() // cover by IsNotEmpty
   @IsString()
   @IsNotEmpty()
-  postSlug: string;
+  slug: string;
 
-  constructor(postSlug: string) {
-    this.postSlug = postSlug;
+  constructor(slug: string) {
+    this.slug = slug;
   }
 }

@@ -14,7 +14,6 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import * as _ from 'lodash';
 
 import { storage } from '../common/file.handler';
 import { imgFileFilter } from '../common/filter/file.filter';
@@ -24,6 +23,7 @@ import { PostDetailsParams } from './dto/posts.params.dto';
 import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
 import { PostListQuery } from './dto/posts.query.dto';
 import { PostEntity } from './posts.entity';
+import { getImage } from '../common/utils/index';
 
 const postImage = 'image';
 if (postImage !== PostEntity.imageField) {
@@ -51,7 +51,7 @@ export class PostsController {
     return await this.postService.create(
       req.user.id,
       body,
-      _.first(files[postImage]),
+      getImage(files, postImage),
     );
   }
 
@@ -68,13 +68,27 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: postImage, maxCount: 1 }], {
+      fileFilter: imgFileFilter,
+      storage: storage,
+    }),
+  )
   @Put(':slug')
   async update(
     @Request() req,
-    @Param() params: PostDetailsParams,
     @Body() data: PostUpdateDto,
+    @Param() params: PostDetailsParams,
+    @UploadedFiles()
+    files: { [postImage]?: Express.Multer.File[] },
   ) {
-    return await this.postService.update(req.user.id, params.postSlug, data);
+    return await this.postService.update(
+      req.user.id,
+      params.slug,
+      data,
+      getImage(files, postImage),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -82,9 +96,4 @@ export class PostsController {
   delete(@Request() req, @Param('slug') slug: string) {
     return this.postService.delete(req.user.id, slug);
   }
-  // @UseGuards(JwtAuthGuard)
-  // @Delete(':id')
-  // delete(@Param('id', ParseIntPipe) id: number) {
-  //   return this.postService.delete(id);
-  // }
 }

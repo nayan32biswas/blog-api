@@ -9,6 +9,7 @@ export class PostListSerializer {
   @Expose() slug: string;
   @Expose() content: string;
   @Expose() image: string;
+  @Expose() publishedAt: Date;
 
   @Expose()
   @Transform(({ value }) => new UserMinimalSerializer(value))
@@ -26,10 +27,7 @@ export class PostDetailsSerializer {
   updatedAt: Date;
 
   @Expose()
-  @Transform(({ value }) => {
-    console.log('user', value);
-    return new UserMinimalSerializer(value);
-  })
+  @Transform(({ value }) => new UserMinimalSerializer(value))
   user: UserMinimalSerializer;
 
   @Expose()

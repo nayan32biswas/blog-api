@@ -1,4 +1,7 @@
 import { randomString, slugify } from './strings';
+import * as _ from 'lodash';
+
+import { KeyObject } from '../types/common.type';
 
 export const generateSlug = async (
   modelRepository: any,
@@ -13,4 +16,11 @@ export const generateSlug = async (
     else slug += randomString(2);
   }
   return slug;
+};
+
+export const getImage = (files: KeyObject | undefined, key: string) => {
+  if (files !== undefined && files[key]?.length) {
+    return _.first(files[key]);
+  }
+  return undefined;
 };

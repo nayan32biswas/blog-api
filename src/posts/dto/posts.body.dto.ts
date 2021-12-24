@@ -1,4 +1,10 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class PostCreateDto {
   @IsString()
@@ -9,11 +15,27 @@ export class PostCreateDto {
   @IsOptional()
   @IsArray()
   tags: Array<string>;
+
+  @IsOptional()
+  @IsDateString()
+  publishedAt: Date;
+  @IsOptional()
+  @IsBoolean()
+  isPublished: boolean;
 }
 
 export class PostUpdateDto {
+  @IsOptional()
   @IsString()
   title: string;
+  @IsOptional()
   @IsString()
   content: string;
+
+  @IsOptional()
+  @IsDateString()
+  publishedAt: Date;
+  @IsOptional()
+  @IsBoolean()
+  isPublished: boolean;
 }
