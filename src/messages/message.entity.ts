@@ -4,11 +4,16 @@ import { BaseEntity } from '../common/common.entity';
 
 @Entity({ name: 'message' })
 export class UserEntity extends BaseEntity {
-  @ManyToOne((type) => UserEntity)
+  @ManyToOne(() => UserEntity)
   sander: UserEntity;
 
-  @ManyToOne((type) => UserEntity)
+  @ManyToOne(() => UserEntity)
   receiver: UserEntity;
+
+  // @ManyToOne(() => UserEntity, user => user.senders, { nullable: false, onDelete: 'CASCADE' })
+  // sander: UserEntity;
+  // @ManyToOne(() => UserEntity, user => user.receivers, { nullable: false, onDelete: 'CASCADE' })
+  // receiver: UserEntity;
 
   @Column()
   content: string;

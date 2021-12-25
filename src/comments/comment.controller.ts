@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
 import { CommentsService } from './comment.service';
-import { CommentCreateUpdateDto } from './dto/comments.body.dto';
+import { CommentCreateDto, CommentUpdateDto } from './dto/comments.body.dto';
 import { PostDetailsParams } from '../posts/dto/posts.urlParser.dto';
 import {
   CommentDetailsParams,
@@ -27,12 +27,13 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  async create(
+  async createComment(
     @Request() req,
-    @Body() body: CommentCreateUpdateDto,
+    @Body() body: CommentCreateDto,
     @Param() params: PostDetailsParams,
   ) {
-    return await this.commentsService.create(
+    console.log(req.user);
+    return await this.commentsService.createComment(
       req.user.id,
       params.postSlug,
       body,
@@ -51,12 +52,12 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Put(':commentId')
-  async update(
+  async updateComment(
     @Request() req,
-    @Body() data: CommentCreateUpdateDto,
+    @Body() data: CommentUpdateDto,
     @Param() params: CommentDetailsParams,
   ) {
-    return await this.commentsService.update(
+    return await this.commentsService.updateComment(
       req.user.id,
       params.postSlug,
       params.commentId,
@@ -66,8 +67,8 @@ export class CommentsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':commentId')
-  delete(@Request() req, @Param() params: CommentDetailsParams) {
-    return this.commentsService.delete(
+  deleteComment(@Request() req, @Param() params: CommentDetailsParams) {
+    return this.commentsService.deleteComment(
       req.user.id,
       params.postSlug,
       params.commentId,

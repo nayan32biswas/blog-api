@@ -10,6 +10,8 @@ import { Exclude, Expose } from 'class-transformer';
 
 import { BaseEntity } from '../common/common.entity';
 import { KeyObject } from '../common/types/common.type';
+import { CommentEntity } from '../comments/comments.entity';
+import { PostVoteEntity, CommentVoteEntity } from '../votes/votes.entity';
 
 enum UserRole {
   BASIC = 'BASIC',
@@ -72,8 +74,18 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'timestamptz', default: new Date() })
   lastLogin: Date;
 
-  @OneToMany((type) => PostEntity, (post) => post.user)
+  // Reverse Relation
+  @OneToMany(() => PostEntity, (post) => post.user)
   posts: PostEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.user)
+  comments: CommentEntity[];
+
+  @OneToMany(() => PostVoteEntity, (postVote) => postVote.user)
+  postVotes: PostVoteEntity[];
+
+  @OneToMany(() => CommentVoteEntity, (commentVote) => commentVote.user)
+  commentVotes: CommentVoteEntity[];
 
   static async getUser(query: KeyObject) {
     return await this.getRepository().findOne(query);

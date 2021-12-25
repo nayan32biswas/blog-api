@@ -1,12 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CommentEntity } from './comments.entity';
-import { CommentCreateUpdateDto } from './dto/comments.body.dto';
+import { CommentCreateDto, CommentUpdateDto } from './dto/comments.body.dto';
 import { CommentListQuery } from './dto/comments.urlParser.dto';
 import { CommentSerializer } from './dto/comments.serializer.dto';
-import { PostEntity } from 'src/posts/posts.entity';
+import { getPublishedPostObjOr404 } from '../posts/query.manager';
+import { UserEntity } from 'src/users/users.entity';
+import { HTTP404, HTTPForbidden } from '../common/exceptions';
 
 @Injectable()
 export class CommentsService {
@@ -15,16 +17,31 @@ export class CommentsService {
     private commentsRepository: Repository<CommentEntity>,
   ) {}
 
-  async create(
+  async createComment(
     userId: number,
     postSlug: string,
-    commentData: CommentCreateUpdateDto,
-  ): Promise<PostEntity> {
-    const comment = new PostEntity();
+    commentData: CommentCreateDto,
+  ): Promise<CommentSerializer> {
     console.log(userId, postSlug, commentData);
 
+    const post = await getPublishedPostObjOr404(postSlug);
+
+    const comment = new CommentEntity();
+
+    if (commentData.parentId) {
+      const parentComment = await this.commentsRepository.findOne({
+        id: commentData.parentId,
+        post: post,
+      });
+      if (!parentComment) HTTP404();
+      comment.parent = parentComment;
+    }
+    comment.content = commentData.content;
+    comment.post = post;
+    comment.user = await UserEntity.getUser({ id: userId });
+
     await this.commentsRepository.save(comment);
-    return comment;
+    return new CommentSerializer(comment);
   }
   async getComments(
     query: CommentListQuery,
@@ -39,6 +56,7 @@ export class CommentsService {
       const limit = Math.min(query.limit, 50);
       queryBuilder.limit(limit);
     }
+    queryBuilder.innerJoinAndSelect('CommentEntity.user', 'user');
 
     const comments = await queryBuilder.getMany();
 
@@ -47,19 +65,19 @@ export class CommentsService {
     );
   }
 
-  async update(
+  async updateComment(
     userId: number,
     postSlug: string,
     commentId: number,
-    commentData: CommentCreateUpdateDto,
-  ): Promise<PostEntity> {
-    const comment = new PostEntity();
+    commentData: CommentUpdateDto,
+  ): Promise<CommentEntity> {
+    const comment = new CommentEntity();
     console.log(userId, postSlug, commentId, commentData);
 
     await this.commentsRepository.save(comment);
     return comment;
   }
-  async delete(userId: number, postSlug: string, commentId: number) {
+  async deleteComment(userId: number, postSlug: string, commentId: number) {
     console.log(userId, postSlug, commentId);
     // TODO: filter comment by userId and postSlug
     const comment = await this.commentsRepository.findOne({
@@ -67,11 +85,9 @@ export class CommentsService {
         id: commentId,
       },
     });
-    if (!comment) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    } else if (comment.user.id !== userId) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    } else {
+    if (!comment) HTTP404();
+    else if (comment.user.id !== userId) HTTPForbidden();
+    else {
       await this.commentsRepository.remove(comment);
       return {
         message: 'Deleted successfully',

@@ -7,21 +7,30 @@ import {
   Tree,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 import { BaseEntity } from '../common/common.entity';
 import { UserEntity } from '../users/users.entity';
 import { PostEntity } from '../posts/posts.entity';
+import { CommentVoteEntity } from '../votes/votes.entity';
 
 @Entity({ name: 'comment' })
 @Tree('closure-table')
 export class CommentEntity extends BaseEntity {
-  @ManyToOne((type) => UserEntity)
+  @ManyToOne(() => UserEntity, (user) => user.comments, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   user: UserEntity;
-  @ManyToOne((type) => PostEntity)
+
+  @ManyToOne(() => PostEntity, (post) => post.comments, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   post: PostEntity;
 
-  @Column()
+  @Column({ nullable: false })
   content: string;
 
   @TreeChildren()
@@ -42,4 +51,7 @@ export class CommentEntity extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
+
+  @OneToMany(() => CommentVoteEntity, (vote) => vote.comment)
+  votes: CommentVoteEntity[];
 }

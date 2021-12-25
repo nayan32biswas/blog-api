@@ -19,7 +19,6 @@ export class UserSerializer {
 
 @Exclude()
 export class UserMinimalSerializer {
-  @Expose() email: string;
   @Expose() username: string;
   @Exclude() firstName: string;
   @Exclude() lastName: string;

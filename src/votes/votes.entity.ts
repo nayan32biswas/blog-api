@@ -12,9 +12,16 @@ export enum VoteType {
 
 @Entity({ name: 'post_vote' })
 export class PostVoteEntity extends BaseEntity {
-  @ManyToOne((type) => UserEntity)
+  @ManyToOne(() => UserEntity, (user) => user.postVotes, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   user: UserEntity;
-  @ManyToOne((type) => PostEntity)
+
+  @ManyToOne(() => PostEntity, (comment) => comment.votes, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   post: PostEntity;
 
   @Column({
@@ -26,9 +33,16 @@ export class PostVoteEntity extends BaseEntity {
 }
 @Entity({ name: 'comment_vote' })
 export class CommentVoteEntity extends BaseEntity {
-  @ManyToOne((type) => UserEntity)
+  @ManyToOne(() => UserEntity, (user) => user.commentVotes, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   user: UserEntity;
-  @ManyToOne((type) => CommentEntity)
+
+  @ManyToOne(() => CommentEntity, (comment) => comment.votes, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   comment: CommentEntity;
 
   @Column({

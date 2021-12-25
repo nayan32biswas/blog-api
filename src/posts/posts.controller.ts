@@ -41,13 +41,13 @@ export class PostsController {
     }),
   )
   @Post()
-  async create(
+  async createPost(
     @Request() req,
     @Body() body: PostCreateDto,
     @UploadedFiles()
     files: { [postImage]?: Express.Multer.File[] },
   ) {
-    return await this.postService.create(
+    return await this.postService.createPost(
       req.user.id,
       body,
       getImage(files, postImage),
@@ -75,14 +75,14 @@ export class PostsController {
     }),
   )
   @Put(':postSlug')
-  async update(
+  async updatePost(
     @Request() req,
     @Body() data: PostUpdateDto,
     @Param() params: PostDetailsParams,
     @UploadedFiles()
     files: { [postImage]?: Express.Multer.File[] },
   ) {
-    return await this.postService.update(
+    return await this.postService.updatePost(
       req.user.id,
       params.postSlug,
       data,
@@ -92,7 +92,7 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':postSlug')
-  delete(@Request() req, @Param() params: PostDetailsParams) {
-    return this.postService.delete(req.user.id, params.postSlug);
+  deletePost(@Request() req, @Param() params: PostDetailsParams) {
+    return this.postService.deletePost(req.user.id, params.postSlug);
   }
 }

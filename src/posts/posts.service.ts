@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -12,6 +12,8 @@ import {
 import { PostListQuery } from './dto/posts.urlParser.dto';
 import { PostEntity, TagEntity } from './posts.entity';
 import { ImageType } from '../common/types/common.type';
+import { getPublishedPost } from './query.manager';
+import { HTTP404, HTTPForbidden } from '../common/exceptions';
 
 @Injectable()
 export class PostsService {
@@ -20,7 +22,7 @@ export class PostsService {
     private postsRepository: Repository<PostEntity>,
   ) {}
 
-  async create(
+  async createPost(
     userId: number,
     postData: PostCreateDto,
     image: ImageType,
@@ -49,7 +51,7 @@ export class PostsService {
     return post;
   }
   async getPosts(query: PostListQuery): Promise<PostListSerializer[]> {
-    const queryBuilder = PostEntity.getPublished();
+    const queryBuilder = getPublishedPost();
 
     if (query.tag) {
       queryBuilder.innerJoin(
@@ -89,20 +91,19 @@ export class PostsService {
     return posts.map((post: PostEntity) => new PostListSerializer(post));
   }
   async getPost(slug: string): Promise<PostDetailsSerializer> {
-    const queryBuilder = PostEntity.getPublished();
+    const queryBuilder = getPublishedPost();
     const post = await queryBuilder
       .andWhere('PostEntity.slug = :slug', { slug })
       .innerJoinAndSelect('PostEntity.user', 'user')
       .leftJoinAndSelect('PostEntity.tags', 'tag')
       .getOne();
 
-    if (!post) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    }
+    if (!post) HTTP404();
+
     return new PostDetailsSerializer(post);
   }
 
-  async update(
+  async updatePost(
     userId: number,
     slug: string,
     postData: PostUpdateDto,
@@ -113,11 +114,9 @@ export class PostsService {
       { relations: ['user'] },
     );
 
-    if (!post) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    } else if (post.user.id !== userId) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    } else {
+    if (!post) HTTP404();
+    else if (post.user.id !== userId) HTTPForbidden();
+    else {
       const { title, content, isPublished, publishedAt } = postData;
 
       if (image && image?.path) {
@@ -136,16 +135,14 @@ export class PostsService {
       return new PostDetailsSerializer(updatePost);
     }
   }
-  async delete(userId: number, slug: string) {
+  async deletePost(userId: number, slug: string) {
     const post = await this.postsRepository.findOne(
       { slug },
       { relations: ['user'] },
     );
-    if (!post) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    } else if (post.user.id !== userId) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    } else {
+    if (!post) HTTP404();
+    else if (post.user.id !== userId) HTTPForbidden();
+    else {
       await this.postsRepository.remove(post);
       return {
         message: 'Deleted successfully',

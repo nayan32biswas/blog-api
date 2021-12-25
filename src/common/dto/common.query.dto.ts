@@ -1,18 +1,20 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
 // import { DEFAULT_LIMIT } from '../../config/config.service';
 
 export class PaginationQuery {
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Max(100)
   @Type(() => Number)
-  limit: number;
+  limit = 20;
 
   @IsOptional()
-  @IsNumber()
+  @Min(0)
+  @IsInt()
   @Type(() => Number)
-  offset: number;
+  offset = 0;
 
   //   constructor(limit: number = null, offset: number = null) {
   //     // this.limit = (limit !== null && parseInt(limit)) || DEFAULT_LIMIT;

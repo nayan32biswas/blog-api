@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -6,6 +6,7 @@ import { PostVoteEntity } from './votes.entity';
 import { PaginationQuery } from '../common/dto/common.query.dto';
 import { PostVoteSerializer } from './dto/vote.serializer.dto';
 import { VoteCreateUpdateDto } from './dto/vote.body.dto';
+import { HTTP404, HTTPForbidden } from '../common/exceptions';
 
 @Injectable()
 export class CommentVotesService {
@@ -74,11 +75,9 @@ export class CommentVotesService {
         id: voteId,
       },
     });
-    if (!postVote) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    } else if (postVote.user.id !== userId) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    } else {
+    if (!postVote) HTTP404();
+    else if (postVote.user.id !== userId) HTTPForbidden();
+    else {
       await this.postVotesRepository.remove(postVote);
       return {
         message: 'Deleted successfully',

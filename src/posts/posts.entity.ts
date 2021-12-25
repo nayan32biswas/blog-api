@@ -6,9 +6,6 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  TreeChildren,
-  TreeParent,
-  Tree,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
@@ -19,6 +16,7 @@ import { BaseEntity } from '../common/common.entity';
 import { UserEntity } from '../users/users.entity';
 import { toAlphabet } from '../common/utils/strings';
 import { CommentEntity } from 'src/comments/comments.entity';
+import { PostVoteEntity } from '../votes/votes.entity';
 
 @Entity({ name: 'tag' })
 export class TagEntity extends BaseEntity {
@@ -57,7 +55,8 @@ export class TagEntity extends BaseEntity {
 @Entity({ name: 'post' })
 export class PostEntity extends BaseEntity {
   @ManyToOne((type) => UserEntity, (user) => user.posts, {
-    cascade: true,
+    nullable: false,
+    onDelete: 'CASCADE',
   })
   user: UserEntity;
 
@@ -78,14 +77,6 @@ export class PostEntity extends BaseEntity {
   @Column({ default: false })
   isPublished: boolean;
 
-  @Exclude()
-  @ManyToMany(() => TagEntity, (tag: TagEntity) => tag.posts)
-  @JoinTable()
-  tags: TagEntity[];
-
-  @OneToMany((type) => CommentEntity, (comment) => comment.post)
-  comments: CommentEntity[];
-
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
@@ -99,12 +90,15 @@ export class PostEntity extends BaseEntity {
   })
   updatedAt: Date;
 
-  static getPublished() {
-    const queryBuilder = this.getRepository().createQueryBuilder();
-    queryBuilder.andWhere(
-      `((PostEntity.publishedAt IS NULL AND PostEntity.isPublished = true) OR (PostEntity.publishedAt IS NOT NULL AND PostEntity.publishedAt <= :publishedAt))`,
-      { publishedAt: new Date() },
-    );
-    return queryBuilder;
-  }
+  // Reverse Relation
+  @Exclude()
+  @ManyToMany(() => TagEntity, (tag: TagEntity) => tag.posts)
+  @JoinTable()
+  tags: TagEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.post)
+  comments: CommentEntity[];
+
+  @OneToMany(() => PostVoteEntity, (vote) => vote.post)
+  votes: PostVoteEntity[];
 }
