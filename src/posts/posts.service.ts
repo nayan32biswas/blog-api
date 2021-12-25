@@ -11,6 +11,7 @@ import {
 } from './dto/posts.serializer.dto';
 import { PostListQuery } from './dto/posts.query.dto';
 import { PostEntity, TagEntity } from './posts.entity';
+import { ImageType } from '../common/types/common.type';
 
 @Injectable()
 export class PostsService {
@@ -22,7 +23,7 @@ export class PostsService {
   async create(
     userId: number,
     postData: PostCreateDto,
-    image: Express.Multer.File | undefined,
+    image: ImageType,
   ): Promise<PostEntity> {
     const { title, content, tags, isPublished, publishedAt } = postData;
     const post = new PostEntity();
@@ -34,7 +35,7 @@ export class PostsService {
     if (image?.path) {
       post.image = image.path;
     }
-    // tags = ['One', 'Two', 'three'];
+    // const tags = ['One', 'Two', 'three'];
     if (tags) {
       const finalTags = await TagEntity.createOrGetTags(tags);
       post.tags = finalTags;
@@ -48,15 +49,10 @@ export class PostsService {
     return post;
   }
   async getPosts(query: PostListQuery): Promise<PostListSerializer[]> {
-    let queryBuilder = this.postsRepository.createQueryBuilder();
-    const timeNow = new Date();
-    queryBuilder = queryBuilder.andWhere(
-      `((PostEntity.publishedAt IS NULL AND PostEntity.isPublished = true) OR (PostEntity.publishedAt IS NOT NULL AND PostEntity.publishedAt <= :publishedAt))`,
-      { publishedAt: timeNow },
-    );
+    const queryBuilder = PostEntity.getPublished();
 
     if (query.tag) {
-      queryBuilder = queryBuilder.innerJoin(
+      queryBuilder.innerJoin(
         'PostEntity.tags',
         'TagEntity',
         'TagEntity.name = :tag',
@@ -64,14 +60,14 @@ export class PostsService {
       );
     }
     if (query.username) {
-      queryBuilder = queryBuilder
+      queryBuilder
         .leftJoinAndSelect('PostEntity.user', 'UserEntity')
         .andWhere('UserEntity.username LIKE :username', {
           username: `%${query.username}%`,
         });
     }
     if (query.q) {
-      queryBuilder = queryBuilder.andWhere(
+      queryBuilder.andWhere(
         '(PostEntity.slug = :slug OR PostEntity.title LIKE :title)',
         {
           slug: query.q,
@@ -81,21 +77,25 @@ export class PostsService {
     }
 
     if (query.offset) {
-      queryBuilder = queryBuilder.offset(query.offset);
+      queryBuilder.offset(query.offset);
     }
     if (query.limit) {
       const limit = Math.min(query.limit, 50);
-      queryBuilder = queryBuilder.limit(limit);
+      queryBuilder.limit(limit);
     }
     queryBuilder.innerJoinAndSelect('PostEntity.user', 'user');
     const posts = await queryBuilder.getMany();
+
     return posts.map((post: PostEntity) => new PostListSerializer(post));
   }
   async getPost(slug: string): Promise<PostDetailsSerializer> {
-    const post = await this.postsRepository.findOne(
-      { slug },
-      { relations: ['user', 'tags'] },
-    );
+    const queryBuilder = PostEntity.getPublished();
+    const post = await queryBuilder
+      .andWhere('PostEntity.slug = :slug', { slug })
+      .innerJoinAndSelect('PostEntity.user', 'user')
+      .leftJoinAndSelect('PostEntity.tags', 'tag')
+      .getOne();
+
     if (!post) {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
@@ -106,7 +106,7 @@ export class PostsService {
     userId: number,
     slug: string,
     postData: PostUpdateDto,
-    image: Express.Multer.File | undefined,
+    image: ImageType,
   ): Promise<PostDetailsSerializer> {
     const post = await this.postsRepository.findOne(
       { slug },

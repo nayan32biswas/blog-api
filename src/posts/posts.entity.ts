@@ -27,6 +27,11 @@ export class TagEntity extends BaseEntity {
   @Column({ unique: true, length: 100 })
   name: string;
 
+  // @Exclude()
+  @ManyToMany(() => PostEntity, (post: PostEntity) => post.tags)
+  @JoinTable()
+  posts: PostEntity[];
+
   static async createOrGetTags(payloadTags: Array<string>) {
     const tagsRepository = this.getRepository();
     const tags = payloadTags.map((tag: string) => toAlphabet(tag));
@@ -72,8 +77,8 @@ export class PostEntity extends BaseEntity {
   @Column({ default: false })
   isPublished: boolean;
 
-  @Exclude()
-  @ManyToMany((type) => TagEntity)
+  // @Exclude()
+  @ManyToMany(() => TagEntity, (tag: TagEntity) => tag.posts)
   @JoinTable()
   tags: TagEntity[];
 
@@ -92,6 +97,15 @@ export class PostEntity extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
+
+  static getPublished() {
+    const queryBuilder = this.getRepository().createQueryBuilder();
+    queryBuilder.andWhere(
+      `((PostEntity.publishedAt IS NULL AND PostEntity.isPublished = true) OR (PostEntity.publishedAt IS NOT NULL AND PostEntity.publishedAt <= :publishedAt))`,
+      { publishedAt: new Date() },
+    );
+    return queryBuilder;
+  }
 }
 
 @Entity({ name: 'comment' })

@@ -16,9 +16,9 @@
       ["get", "OK"]
     ],
     "/post/<slug>/": [
-      ["get", "Partial implementation"],
+      ["get", "OK"],
       ["put", "OK"],
-      ["delete", "Partial implementation"]
+      ["delete", "OK"]
     ],
     "/post/<slug>/vote/": [
       ["post", "No implementation"],

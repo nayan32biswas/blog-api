@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 
-import { KeyObject } from '../common/types/common.type';
+import { ImageType, KeyObject } from '../common/types/common.type';
 import { UserEntity } from './users.entity';
 import { UserUpdateDto } from './types/users.dto';
 import { UserSerializer } from './types/users.serializer';
@@ -68,7 +68,11 @@ export class UsersService {
     return new UserSerializer(user);
   }
 
-  async update(id: string, userData: UserUpdateDto): Promise<UserEntity> {
+  async update(
+    id: string,
+    userData: UserUpdateDto,
+    picture: ImageType,
+  ): Promise<UserEntity> {
     const { firstName, lastName, birthDate } = userData;
 
     const user = await this.usersRepository.findOne(id);
@@ -76,6 +80,7 @@ export class UsersService {
     firstName !== user.firstName && (user.firstName = firstName);
     lastName !== user.lastName && (user.lastName = lastName);
     birthDate !== user.birthDate && (user.birthDate = birthDate);
+    picture !== undefined && (user.picture = picture.path);
 
     return await this.usersRepository.save(user);
   }
