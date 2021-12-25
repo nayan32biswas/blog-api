@@ -18,6 +18,7 @@ import {
 import { BaseEntity } from '../common/common.entity';
 import { UserEntity } from '../users/users.entity';
 import { toAlphabet } from '../common/utils/strings';
+import { CommentEntity } from 'src/comments/comments.entity';
 
 @Entity({ name: 'tag' })
 export class TagEntity extends BaseEntity {
@@ -27,7 +28,7 @@ export class TagEntity extends BaseEntity {
   @Column({ unique: true, length: 100 })
   name: string;
 
-  // @Exclude()
+  @Exclude()
   @ManyToMany(() => PostEntity, (post: PostEntity) => post.tags)
   @JoinTable()
   posts: PostEntity[];
@@ -77,7 +78,7 @@ export class PostEntity extends BaseEntity {
   @Column({ default: false })
   isPublished: boolean;
 
-  // @Exclude()
+  @Exclude()
   @ManyToMany(() => TagEntity, (tag: TagEntity) => tag.posts)
   @JoinTable()
   tags: TagEntity[];
@@ -106,69 +107,4 @@ export class PostEntity extends BaseEntity {
     );
     return queryBuilder;
   }
-}
-
-@Entity({ name: 'comment' })
-@Tree('closure-table')
-export class CommentEntity extends BaseEntity {
-  @ManyToOne((type) => UserEntity)
-  user: UserEntity;
-  @ManyToOne((type) => PostEntity)
-  post: PostEntity;
-
-  @Column()
-  content: string;
-
-  @TreeChildren()
-  children: CommentEntity[];
-
-  @TreeParent()
-  parent: CommentEntity;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
-  updatedAt: Date;
-}
-
-export enum VoteType {
-  UPVOTE = 'U',
-  DOWNVOTE = 'D',
-}
-
-@Entity({ name: 'post_vote' })
-export class PostVoteEntity extends BaseEntity {
-  @ManyToOne((type) => UserEntity)
-  user: UserEntity;
-  @ManyToOne((type) => PostEntity)
-  post: PostEntity;
-
-  @Column({
-    type: 'enum',
-    enum: VoteType,
-    default: VoteType.UPVOTE,
-  })
-  type: VoteType;
-}
-@Entity({ name: 'comment_vote' })
-export class CommentVoteEntity extends BaseEntity {
-  @ManyToOne((type) => UserEntity)
-  user: UserEntity;
-  @ManyToOne((type) => CommentEntity)
-  comment: CommentEntity;
-
-  @Column({
-    type: 'enum',
-    enum: VoteType,
-    default: VoteType.UPVOTE,
-  })
-  type: VoteType;
 }

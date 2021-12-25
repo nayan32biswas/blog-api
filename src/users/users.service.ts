@@ -8,7 +8,7 @@ import { ImageType, KeyObject } from '../common/types/common.type';
 import { UserEntity } from './users.entity';
 import { UserUpdateDto } from './types/users.dto';
 import { UserSerializer } from './types/users.serializer';
-import { PostListQuery } from '../posts/dto/posts.query.dto';
+import { PostListQuery } from '../posts/dto/posts.urlParser.dto';
 import { PostListSerializer } from '../posts/dto/posts.serializer.dto';
 import { PostEntity } from '../posts/posts.entity';
 

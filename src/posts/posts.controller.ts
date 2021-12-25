@@ -19,9 +19,8 @@ import { storage } from '../common/file.handler';
 import { imgFileFilter } from '../common/filter/file.filter';
 import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
 import { PostsService } from './posts.service';
-import { PostDetailsParams } from './dto/posts.params.dto';
+import { PostDetailsParams, PostListQuery } from './dto/posts.urlParser.dto';
 import { PostCreateDto, PostUpdateDto } from './dto/posts.body.dto';
-import { PostListQuery } from './dto/posts.query.dto';
 import { PostEntity } from './posts.entity';
 import { getImage } from '../common/utils/index';
 
@@ -62,9 +61,9 @@ export class PostsController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get(':slug')
-  getPost(@Param('slug') slug: string) {
-    return this.postService.getPost(slug);
+  @Get(':postSlug')
+  getPost(@Param() params: PostDetailsParams) {
+    return this.postService.getPost(params.postSlug);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -75,7 +74,7 @@ export class PostsController {
       storage: storage,
     }),
   )
-  @Put(':slug')
+  @Put(':postSlug')
   async update(
     @Request() req,
     @Body() data: PostUpdateDto,
@@ -85,15 +84,15 @@ export class PostsController {
   ) {
     return await this.postService.update(
       req.user.id,
-      params.slug,
+      params.postSlug,
       data,
       getImage(files, postImage),
     );
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':slug')
-  delete(@Request() req, @Param('slug') slug: string) {
-    return this.postService.delete(req.user.id, slug);
+  @Delete(':postSlug')
+  delete(@Request() req, @Param() params: PostDetailsParams) {
+    return this.postService.delete(req.user.id, params.postSlug);
   }
 }

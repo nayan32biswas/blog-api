@@ -17,7 +17,7 @@ import { UsersService } from './users.service';
 import { RegistrationDto, UserUpdateDto } from './types/users.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { PostListQuery } from '../posts/dto/posts.query.dto';
+import { PostListQuery } from '../posts/dto/posts.urlParser.dto';
 import { UserEntity } from './users.entity';
 import { imgFileFilter } from '../common/filter/file.filter';
 import { storage } from '../common/file.handler';
@@ -26,7 +26,7 @@ import { getImage } from '../common/utils/index';
 
 const pictureField = 'picture';
 if (pictureField !== UserEntity.pictureField) {
-  throw new Error('Post invalid image field');
+  throw new Error('User invalid image field');
 }
 
 @Controller('user')

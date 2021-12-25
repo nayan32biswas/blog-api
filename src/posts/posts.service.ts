@@ -9,7 +9,7 @@ import {
   PostListSerializer,
   PostDetailsSerializer,
 } from './dto/posts.serializer.dto';
-import { PostListQuery } from './dto/posts.query.dto';
+import { PostListQuery } from './dto/posts.urlParser.dto';
 import { PostEntity, TagEntity } from './posts.entity';
 import { ImageType } from '../common/types/common.type';
 

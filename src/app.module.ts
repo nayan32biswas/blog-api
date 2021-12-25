@@ -6,6 +6,8 @@ import { configService } from './config/config.service';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { PostsModule } from './posts/posts.module';
+import { CommentsModule } from './comments/comments.module';
+import { VotesModule } from './votes/votes.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { PostsModule } from './posts/posts.module';
     CommonModule,
     UsersModule,
     PostsModule,
+    CommentsModule,
+    VotesModule,
   ],
   providers: [
     {

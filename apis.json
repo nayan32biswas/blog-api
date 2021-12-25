@@ -15,28 +15,31 @@
       ["post", "OK"],
       ["get", "OK"]
     ],
-    "/post/<slug>/": [
-      ["get", "OK"],
+    "/post/<postSlug>/": [
+      ["get", "OK need implementation of comment and vote"],
       ["put", "OK"],
       ["delete", "OK"]
     ],
-    "/post/<slug>/vote/": [
+    "/post/<postSlug>/vote/": [
       ["post", "No implementation"],
-      ["put", "No implementation"],
-      ["delete", "No implementation"]
+      ["get", "No implementation"],
+      ["put", "No implementation"]
     ],
-    "/post/<slug>/comments/": [
+    "/post/<postSlug>/vote/<voteId>": [["delete", "No implementation"]],
+    "/post/<postSlug>/comment/": [
       ["post", "No implementation"],
       ["get", "Partial implementation"]
     ],
-    "/post/<slug>/comments/<id>/": [
-      ["get", "No implementation"],
+    "/post/<postSlug>/comment/<commentId>/": [
       ["put", "No implementation"],
       ["delete", "No implementation"]
     ],
-    "/post/<slug>/comments/<id>/vote/": [
+    "/post/<postSlug>/comment/<commentId>/vote/": [
       ["post", "No implementation"],
-      ["put", "No implementation"],
+      ["get", "No implementation"],
+      ["put", "No implementation"]
+    ],
+    "/post/<postSlug>/comment/<commentId>/vote/<voteId>": [
       ["delete", "No implementation"]
     ]
   },
