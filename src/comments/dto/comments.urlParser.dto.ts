@@ -1,6 +1,7 @@
 import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
-import { PaginationQuery } from '../../common/dto/common.query.dto';
+import { PaginationQuery } from 'src/common/dto/common.query.dto';
 
 export class CommentDetailsParams {
   // @IsDefined() // cover by IsNotEmpty
@@ -21,5 +22,6 @@ export class CommentDetailsParams {
 export class CommentListQuery extends PaginationQuery {
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   childrenOf: number;
 }

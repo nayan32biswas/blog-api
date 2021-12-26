@@ -16,7 +16,6 @@ import { PostEntity } from '../posts/posts.entity';
 import { CommentVoteEntity } from '../votes/votes.entity';
 
 @Entity({ name: 'comment' })
-@Tree('closure-table')
 export class CommentEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, (user) => user.comments, {
     nullable: false,
@@ -33,10 +32,10 @@ export class CommentEntity extends BaseEntity {
   @Column({ nullable: false })
   content: string;
 
-  @TreeChildren()
-  children: CommentEntity[];
-
-  @TreeParent()
+  @ManyToOne(() => CommentEntity, (comment) => comment.childrens, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   parent: CommentEntity;
 
   @CreateDateColumn({
@@ -52,6 +51,10 @@ export class CommentEntity extends BaseEntity {
   })
   updatedAt: Date;
 
+  // Reverse Relation
   @OneToMany(() => CommentVoteEntity, (vote) => vote.comment)
   votes: CommentVoteEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.parent)
+  childrens: CommentEntity[];
 }

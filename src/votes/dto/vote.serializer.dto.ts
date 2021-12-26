@@ -1,6 +1,6 @@
 import { Exclude, Transform, Expose } from 'class-transformer';
 
-import { UserMinimalSerializer } from '../../users/types/users.serializer';
+import { UserMinimalSerializer } from 'src/users/types/users.serializer';
 
 @Exclude()
 export class PostVoteSerializer {

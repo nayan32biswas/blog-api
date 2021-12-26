@@ -13,7 +13,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../users/guards/jwt-auth.guard';
-import { CommentsService } from './comment.service';
+import { CommentsService } from './comments.service';
 import { CommentCreateDto, CommentUpdateDto } from './dto/comments.body.dto';
 import { PostDetailsParams } from '../posts/dto/posts.urlParser.dto';
 import {

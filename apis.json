@@ -28,7 +28,7 @@
     "/post/<postSlug>/vote/<voteId>": [["delete", "No implementation"]],
     "/post/<postSlug>/comment/": [
       ["post", "OK"],
-      ["get", "Partial implementation"]
+      ["get", "OK"]
     ],
     "/post/<postSlug>/comment/<commentId>/": [
       ["put", "No implementation"],

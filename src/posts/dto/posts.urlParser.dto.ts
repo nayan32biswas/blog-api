@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
-import { PaginationQuery } from '../../common/dto/common.query.dto';
+import { PaginationQuery } from 'src/common/dto/common.query.dto';
 
 export class PostDetailsParams {
   // @IsDefined() // cover by IsNotEmpty

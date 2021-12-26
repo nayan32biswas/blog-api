@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
-// import { DEFAULT_LIMIT } from '../../config/config.service';
+// import { DEFAULT_LIMIT } from srcconfig/config.service';
 
 export class PaginationQuery {
   @IsOptional()

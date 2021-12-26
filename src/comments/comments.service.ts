@@ -4,11 +4,11 @@ import { Repository } from 'typeorm';
 
 import { CommentEntity } from './comments.entity';
 import { CommentCreateDto, CommentUpdateDto } from './dto/comments.body.dto';
-import { CommentListQuery } from './dto/comments.urlParser.dto';
 import { CommentSerializer } from './dto/comments.serializer.dto';
 import { getPublishedPostObjOr404 } from '../posts/query.manager';
 import { UserEntity } from 'src/users/users.entity';
 import { HTTP404, HTTPForbidden } from '../common/exceptions';
+import { CommentListQuery } from './dto/comments.urlParser.dto';
 
 @Injectable()
 export class CommentsService {
@@ -34,6 +34,10 @@ export class CommentsService {
         post: post,
       });
       if (!parentComment) HTTP404();
+      if (parentComment.parent) {
+        // reduce multi level depth to one depth
+        HTTPForbidden();
+      }
       comment.parent = parentComment;
     }
     comment.content = commentData.content;
@@ -48,21 +52,33 @@ export class CommentsService {
     postSlug: string,
   ): Promise<CommentSerializer[]> {
     const queryBuilder = this.commentsRepository.createQueryBuilder();
-    console.log(query, postSlug);
-    if (query.offset) {
-      queryBuilder.offset(query.offset);
+
+    queryBuilder
+      .leftJoin('CommentEntity.post', 'PostEntity')
+      .andWhere('PostEntity.slug = :slug', {
+        slug: postSlug,
+      });
+
+    if (query.childrenOf) {
+      queryBuilder.andWhere('CommentEntity.parent = :parentId', {
+        parentId: query.childrenOf,
+      });
+    } else {
+      queryBuilder
+        .andWhere('CommentEntity.parent IS NULL')
+        .loadRelationCountAndMap(
+          'CommentEntity.countChild',
+          'CommentEntity.childrens',
+        );
     }
-    if (query.limit) {
-      const limit = Math.min(query.limit, 50);
-      queryBuilder.limit(limit);
-    }
-    queryBuilder.innerJoinAndSelect('CommentEntity.user', 'user');
+    queryBuilder.innerJoinAndSelect('CommentEntity.user', 'UserEntity');
+
+    queryBuilder.offset(query.offset);
+    queryBuilder.limit(query.limit);
 
     const comments = await queryBuilder.getMany();
 
-    return comments.map(
-      (comments: CommentEntity) => new CommentSerializer(comments),
-    );
+    return (await comments).map((comment) => new CommentSerializer(comment));
   }
 
   async updateComment(

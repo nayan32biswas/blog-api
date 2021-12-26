@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { SECRET_KEY } from '../../config/config.service';
+import { SECRET_KEY } from 'src/config/config.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 // import { Repository } from 'typeorm';
 // import { InjectRepository } from '@nestjs/typeorm';
 
-// import { SECRET_KEY } from '../../config/config.service';
+// import { SECRET_KEY } from 'src/config/config.service';
 // import { UserEntity } from '../users.entity';
 
 // @Injectable()
