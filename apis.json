@@ -31,8 +31,8 @@
       ["get", "OK"]
     ],
     "/post/<postSlug>/comment/<commentId>/": [
-      ["put", "No implementation"],
-      ["delete", "No implementation"]
+      ["put", "OK"],
+      ["delete", "OK"]
     ],
     "/post/<postSlug>/comment/<commentId>/vote/": [
       ["post", "No implementation"],

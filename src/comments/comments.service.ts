@@ -86,28 +86,42 @@ export class CommentsService {
     postSlug: string,
     commentId: number,
     commentData: CommentUpdateDto,
-  ): Promise<CommentEntity> {
-    const comment = new CommentEntity();
-    console.log(userId, postSlug, commentId, commentData);
+  ): Promise<CommentSerializer> {
+    const queryBuilder = this.commentsRepository.createQueryBuilder();
+    queryBuilder
+      .where(`CommentEntity.id = :id AND CommentEntity.user = :userId`, {
+        id: commentId,
+        userId: userId,
+      })
+      .innerJoin('CommentEntity.post', 'post')
+      .andWhere(`post.slug = :slug`, { slug: postSlug });
 
+    queryBuilder.innerJoinAndSelect('CommentEntity.user', 'user');
+
+    const comment = await queryBuilder.getOne();
+
+    if (!comment) HTTP404();
+
+    comment.content = commentData.content;
     await this.commentsRepository.save(comment);
-    return comment;
+
+    return new CommentSerializer(comment);
   }
   async deleteComment(userId: number, postSlug: string, commentId: number) {
-    console.log(userId, postSlug, commentId);
-    // TODO: filter comment by userId and postSlug
-    const comment = await this.commentsRepository.findOne({
-      where: {
+    const queryBuilder = this.commentsRepository.createQueryBuilder();
+    queryBuilder
+      .where(`CommentEntity.id = :id AND CommentEntity.user = :userId`, {
         id: commentId,
-      },
-    });
+        userId: userId,
+      })
+      .innerJoin('CommentEntity.post', 'post')
+      .andWhere(`post.slug = :slug`, { slug: postSlug });
+    const comment = await queryBuilder.getOne();
+
     if (!comment) HTTP404();
-    else if (comment.user.id !== userId) HTTPForbidden();
-    else {
-      await this.commentsRepository.remove(comment);
-      return {
-        message: 'Deleted successfully',
-      };
-    }
+    await this.commentsRepository.remove(comment);
+    return {
+      message: 'Deleted successfully',
+    };
   }
 }
