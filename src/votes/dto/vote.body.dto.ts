@@ -3,5 +3,5 @@ import { VoteType } from '../votes.entity';
 
 export class VoteCreateUpdateDto {
   @IsEnum(VoteType)
-  content: VoteType;
+  type: VoteType;
 }

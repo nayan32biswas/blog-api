@@ -13,7 +13,7 @@ import { PostListQuery } from './dto/posts.urlParser.dto';
 import { PostEntity, TagEntity } from './posts.entity';
 import { ImageType } from '../common/types/common.type';
 import { getPublishedPost } from './query.manager';
-import { HTTP404, HTTPForbidden } from '../common/exceptions';
+import { HTTP404, HTTPForbidden } from '../common/http.exceptions';
 
 @Injectable()
 export class PostsService {

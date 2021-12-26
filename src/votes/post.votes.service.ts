@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryBuilder, Repository } from 'typeorm';
 
 import { PostVoteEntity } from './votes.entity';
 import { PaginationQuery } from '../common/dto/common.query.dto';
 import { PostVoteSerializer } from './dto/vote.serializer.dto';
 import { VoteCreateUpdateDto } from './dto/vote.body.dto';
-import { HTTP404, HTTPForbidden } from '../common/exceptions';
+import { HTTP404, HTTPForbidden } from '../common/http.exceptions';
+import { getPublishedPostObjOr404 } from '../posts/query.manager';
+import { getUserObjOr404 } from '../users/query.manager';
 
 @Injectable()
 export class PostVotesService {
@@ -15,30 +17,47 @@ export class PostVotesService {
     private postVotesRepository: Repository<PostVoteEntity>,
   ) {}
 
-  async createPostVote(
+  async createOrUpdatePostVote(
     userId: number,
     postSlug: string,
     voteData: VoteCreateUpdateDto,
-  ): Promise<PostVoteEntity> {
-    const postVote = new PostVoteEntity();
-    console.log(userId, postSlug, voteData);
+  ): Promise<PostVoteSerializer> {
+    const post = await getPublishedPostObjOr404(postSlug);
+
+    let postVote = await this.postVotesRepository.findOne({
+      where: {
+        post: post.id,
+        user: userId,
+      },
+      relations: ['user'],
+    });
+
+    if (postVote === undefined) {
+      const user = await getUserObjOr404(userId);
+      postVote = new PostVoteEntity();
+      postVote.post = post;
+      postVote.user = user;
+    }
+
+    postVote.type = voteData.type;
 
     await this.postVotesRepository.save(postVote);
-    return postVote;
+    return new PostVoteSerializer(postVote);
   }
   async getPostVotes(
     query: PaginationQuery,
     postSlug: string,
   ): Promise<PostVoteSerializer[]> {
-    const queryBuilder = this.postVotesRepository.createQueryBuilder();
-    console.log(query, postSlug);
-    if (query.offset) {
-      queryBuilder.offset(query.offset);
-    }
-    if (query.limit) {
-      const limit = Math.min(query.limit, 50);
-      queryBuilder.limit(limit);
-    }
+    const queryBuilder = this.postVotesRepository
+      .createQueryBuilder()
+      .innerJoin('PostVoteEntity.post', 'PostEntity')
+      .where(`PostEntity.slug = :slug`, { slug: postSlug })
+      .innerJoinAndSelect('PostVoteEntity.user', 'UserEntity');
+
+    console.log('no error found');
+
+    queryBuilder.offset(query.offset);
+    queryBuilder.limit(query.limit);
 
     const postVotes = await queryBuilder.getMany();
 
@@ -47,28 +66,20 @@ export class PostVotesService {
     );
   }
 
-  async updatePostVote(
-    userId: number,
-    postSlug: string,
-    voteId: number,
-    voteData: VoteCreateUpdateDto,
-  ): Promise<PostVoteEntity> {
-    const postVote = new PostVoteEntity();
-    console.log(userId, postSlug, voteId, voteData);
-
-    await this.postVotesRepository.save(postVote);
-    return postVote;
-  }
   async deletePostVote(userId: number, postSlug: string, voteId: number) {
     console.log(userId, postSlug, voteId);
     // TODO: filter postVote by userId and postSlug
-    const postVote = await this.postVotesRepository.findOne({
-      where: {
-        id: voteId,
-      },
-    });
+    const queryBuilder = this.postVotesRepository
+      .createQueryBuilder()
+      .innerJoin('PostVoteEntity.post', 'PostEntity')
+      .where(
+        `PostVoteEntity.id = :id AND PostVoteEntity.userId = :userID AND PostEntity.slug = :slug`,
+        { id: voteId, userId: userId, slug: postSlug },
+      );
+
+    const postVote = await queryBuilder.getOne();
+
     if (!postVote) HTTP404();
-    else if (postVote.user.id !== userId) HTTPForbidden();
     else {
       await this.postVotesRepository.remove(postVote);
       return {

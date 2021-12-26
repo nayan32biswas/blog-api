@@ -7,7 +7,7 @@ import { CommentCreateDto, CommentUpdateDto } from './dto/comments.body.dto';
 import { CommentSerializer } from './dto/comments.serializer.dto';
 import { getPublishedPostObjOr404 } from '../posts/query.manager';
 import { UserEntity } from 'src/users/users.entity';
-import { HTTP404, HTTPForbidden } from '../common/exceptions';
+import { HTTP404, HTTPForbidden } from '../common/http.exceptions';
 import { CommentListQuery } from './dto/comments.urlParser.dto';
 
 @Injectable()
@@ -22,8 +22,6 @@ export class CommentsService {
     postSlug: string,
     commentData: CommentCreateDto,
   ): Promise<CommentSerializer> {
-    console.log(userId, postSlug, commentData);
-
     const post = await getPublishedPostObjOr404(postSlug);
 
     const comment = new CommentEntity();

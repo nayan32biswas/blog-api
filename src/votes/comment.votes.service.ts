@@ -6,7 +6,7 @@ import { PostVoteEntity } from './votes.entity';
 import { PaginationQuery } from '../common/dto/common.query.dto';
 import { PostVoteSerializer } from './dto/vote.serializer.dto';
 import { VoteCreateUpdateDto } from './dto/vote.body.dto';
-import { HTTP404, HTTPForbidden } from '../common/exceptions';
+import { HTTP404, HTTPForbidden } from '../common/http.exceptions';
 
 @Injectable()
 export class CommentVotesService {

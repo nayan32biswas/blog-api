@@ -1,5 +1,5 @@
 import { PostEntity } from './posts.entity';
-import { HTTP404 } from '../common/exceptions';
+import { HTTP404 } from '../common/http.exceptions';
 
 export const getPublishedPost = () => {
   const queryBuilder = PostEntity.getRepository().createQueryBuilder();

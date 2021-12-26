@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  Post,
   Put,
   UseGuards,
   Request,
@@ -24,13 +23,13 @@ export class PostVotesController {
   constructor(private readonly postVotesService: PostVotesService) {}
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post()
-  async createPostVote(
+  @Put()
+  async createOrUpdatePostVote(
     @Request() req,
     @Body() body: VoteCreateUpdateDto,
     @Param() params: PostDetailsParams,
   ) {
-    return await this.postVotesService.createPostVote(
+    return await this.postVotesService.createOrUpdatePostVote(
       req.user.id,
       params.postSlug,
       body,
@@ -44,22 +43,6 @@ export class PostVotesController {
     @Param() params: PostDetailsParams,
   ) {
     return this.postVotesService.getPostVotes(query, params.postSlug);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Put(':voteId')
-  async updatePostVote(
-    @Request() req,
-    @Body() data: VoteCreateUpdateDto,
-    @Param() params: PostVoteDetailsParams,
-  ) {
-    return await this.postVotesService.updatePostVote(
-      req.user.id,
-      params.postSlug,
-      params.voteId,
-      data,
-    );
   }
 
   @UseGuards(JwtAuthGuard)
