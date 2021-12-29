@@ -78,17 +78,18 @@ export class PostsService {
       );
     }
 
-    // if (query.offset) {
-    //   queryBuilder.offset(query.offset);
-    // }
-    // if (query.limit) {
-    //   const limit = Math.min(query.limit, 50);
-    //   queryBuilder.limit(limit);
-    // }
     queryBuilder.offset(query.offset);
     queryBuilder.limit(query.limit);
 
     queryBuilder.innerJoinAndSelect('PostEntity.user', 'user');
+
+    queryBuilder
+      .loadRelationCountAndMap(
+        'PostEntity.numberOfComment',
+        'PostEntity.comments',
+      )
+      .loadRelationCountAndMap('PostEntity.numberOfVote', 'PostEntity.votes');
+
     const posts = await queryBuilder.getMany();
 
     return posts.map((post: PostEntity) => new PostListSerializer(post));

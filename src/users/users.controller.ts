@@ -34,7 +34,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post('registration')
   async registration(@Body() payload: RegistrationDto) {
-    console.log(payload);
     return this.usersService.registration(payload);
   }
   @UseGuards(LocalAuthGuard)

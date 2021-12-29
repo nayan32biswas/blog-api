@@ -2,86 +2,94 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { PostVoteEntity } from './votes.entity';
+import { CommentVoteEntity } from './votes.entity';
 import { PaginationQuery } from '../common/dto/common.query.dto';
-import { PostVoteSerializer } from './dto/vote.serializer.dto';
+import { CommonVoteSerializer } from './dto/vote.serializer.dto';
 import { VoteCreateUpdateDto } from './dto/vote.body.dto';
-import { HTTP404, HTTPForbidden } from '../common/http.exceptions';
+import { HTTP404 } from '../common/http.exceptions';
+import { getUserObjOr404 } from '../users/query.manager';
+import { CommentEntity } from '../comments/comments.entity';
 
 @Injectable()
 export class CommentVotesService {
   constructor(
-    @InjectRepository(PostVoteEntity)
-    private postVotesRepository: Repository<PostVoteEntity>,
+    @InjectRepository(CommentVoteEntity)
+    private commentVotesRepository: Repository<CommentVoteEntity>,
   ) {}
 
-  async createCommentVote(
+  async createOrUpdateCommentVote(
     userId: number,
     postSlug: string,
     commentId: number,
     voteData: VoteCreateUpdateDto,
-  ): Promise<PostVoteEntity> {
-    const postVote = new PostVoteEntity();
-    console.log(userId, postSlug, commentId, voteData);
+  ): Promise<CommonVoteSerializer> {
+    const comment = await CommentEntity.getRepository()
+      .createQueryBuilder()
+      .innerJoin('CommentEntity.post', 'PostEntity')
+      .where(`CommentEntity.id = :commentId AND PostEntity.slug = :postSlug`, {
+        commentId,
+        postSlug,
+      })
+      .getOne();
+    if (!comment) HTTP404();
 
-    await this.postVotesRepository.save(postVote);
-    return postVote;
+    let commentVote = await this.commentVotesRepository.findOne({
+      where: {
+        comment: comment.id,
+        user: userId,
+      },
+      relations: ['user'],
+    });
+
+    if (commentVote === undefined) {
+      const user = await getUserObjOr404(userId);
+      commentVote = new CommentVoteEntity();
+      commentVote.comment = comment;
+      commentVote.user = user;
+    }
+
+    commentVote.type = voteData.type;
+    await this.commentVotesRepository.save(commentVote);
+
+    return new CommonVoteSerializer(commentVote);
   }
   async getCommentVotes(
     query: PaginationQuery,
-    postSlug: string,
     commentId: number,
-  ): Promise<PostVoteSerializer[]> {
-    const queryBuilder = this.postVotesRepository.createQueryBuilder();
-    console.log(query, postSlug, commentId);
-    if (query.offset) {
-      queryBuilder.offset(query.offset);
-    }
-    if (query.limit) {
-      const limit = Math.min(query.limit, 50);
-      queryBuilder.limit(limit);
-    }
+  ): Promise<CommonVoteSerializer[]> {
+    const queryBuilder = this.commentVotesRepository
+      .createQueryBuilder()
+      .where(`CommentVoteEntity.comment = :commentId`, {
+        commentId: commentId,
+      })
+      .innerJoinAndSelect('CommentVoteEntity.user', 'UserEntity');
 
-    const postVotes = await queryBuilder.getMany();
+    queryBuilder.offset(query.offset);
+    queryBuilder.limit(query.limit);
 
-    return postVotes.map(
-      (postVotes: PostVoteEntity) => new PostVoteSerializer(postVotes),
+    const commentVotes = await queryBuilder.getMany();
+    return commentVotes.map(
+      (commentVotes: CommentVoteEntity) =>
+        new CommonVoteSerializer(commentVotes),
     );
   }
 
-  async updateCommentVote(
-    userId: number,
-    postSlug: string,
-    commentId: number,
-    voteId: number,
-    voteData: VoteCreateUpdateDto,
-  ): Promise<PostVoteEntity> {
-    const postVote = new PostVoteEntity();
-    console.log(userId, postSlug, commentId, voteId, voteData);
+  async deleteCommentVote(userId: number, commentId: number) {
+    const commentVote = await this.commentVotesRepository
+      .createQueryBuilder()
+      .where(
+        `CommentVoteEntity.comment = :commentId AND CommentVoteEntity.user = :userId`,
+        { commentId, userId },
+      )
+      .getOne();
 
-    await this.postVotesRepository.save(postVote);
-    return postVote;
-  }
-  async deleteCommentVote(
-    userId: number,
-    postSlug: string,
-    commentId: number,
-    voteId: number,
-  ) {
-    console.log(userId, postSlug, commentId, voteId);
-    // TODO: filter postVote by userId and postSlug
-    const postVote = await this.postVotesRepository.findOne({
-      where: {
-        id: voteId,
-      },
-    });
-    if (!postVote) HTTP404();
-    else if (postVote.user.id !== userId) HTTPForbidden();
-    else {
-      await this.postVotesRepository.remove(postVote);
+    if (commentVote) {
+      await this.commentVotesRepository.remove(commentVote);
       return {
         message: 'Deleted successfully',
       };
+    } else {
+      HTTP404();
     }
   }
 }

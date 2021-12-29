@@ -46,12 +46,8 @@ export class PostVotesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':voteId')
-  deletePostVote(@Request() req, @Param() params: PostVoteDetailsParams) {
-    return this.postVotesService.deletePostVote(
-      req.user.id,
-      params.postSlug,
-      params.voteId,
-    );
+  @Delete()
+  deletePostVote(@Request() req, @Param() params: PostDetailsParams) {
+    return this.postVotesService.deletePostVote(req.user.id, params.postSlug);
   }
 }

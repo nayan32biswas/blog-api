@@ -16,15 +16,15 @@
       ["get", "OK"]
     ],
     "/post/<postSlug>/": [
-      ["get", "OK need implementation of comment and vote"],
+      ["get", "OK"],
       ["put", "OK"],
       ["delete", "OK"]
     ],
     "/post/<postSlug>/vote/": [
-      ["put", "No implementation"],
-      ["get", "No implementation"]
+      ["put", "OK"],
+      ["get", "OK"]
     ],
-    "/post/<postSlug>/vote/<voteId>": [["delete", "No implementation"]],
+    "/post/<postSlug>/vote/<voteId>": [["delete", "OK"]],
     "/post/<postSlug>/comment/": [
       ["post", "OK"],
       ["get", "OK"]
@@ -34,13 +34,10 @@
       ["delete", "OK"]
     ],
     "/post/<postSlug>/comment/<commentId>/vote/": [
-      ["post", "No implementation"],
-      ["get", "No implementation"],
-      ["put", "No implementation"]
+      ["put", "OK"],
+      ["get", "OK"]
     ],
-    "/post/<postSlug>/comment/<commentId>/vote/<voteId>": [
-      ["delete", "No implementation"]
-    ]
+    "/post/<postSlug>/comment/<commentId>/vote/<voteId>": [["delete", "OK"]]
   },
   "message": {
     "/message/": [["network upgrade call"]]

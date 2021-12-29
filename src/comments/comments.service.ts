@@ -65,7 +65,7 @@ export class CommentsService {
       queryBuilder
         .andWhere('CommentEntity.parent IS NULL')
         .loadRelationCountAndMap(
-          'CommentEntity.countChild',
+          'CommentEntity.numberOfChild',
           'CommentEntity.childrens',
         );
     }

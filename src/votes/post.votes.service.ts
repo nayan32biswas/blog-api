@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryBuilder, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { PostVoteEntity } from './votes.entity';
 import { PaginationQuery } from '../common/dto/common.query.dto';
-import { PostVoteSerializer } from './dto/vote.serializer.dto';
+import { CommonVoteSerializer } from './dto/vote.serializer.dto';
 import { VoteCreateUpdateDto } from './dto/vote.body.dto';
-import { HTTP404, HTTPForbidden } from '../common/http.exceptions';
+import { HTTP404 } from '../common/http.exceptions';
 import { getPublishedPostObjOr404 } from '../posts/query.manager';
 import { getUserObjOr404 } from '../users/query.manager';
 
@@ -21,7 +21,7 @@ export class PostVotesService {
     userId: number,
     postSlug: string,
     voteData: VoteCreateUpdateDto,
-  ): Promise<PostVoteSerializer> {
+  ): Promise<CommonVoteSerializer> {
     const post = await getPublishedPostObjOr404(postSlug);
 
     let postVote = await this.postVotesRepository.findOne({
@@ -42,19 +42,17 @@ export class PostVotesService {
     postVote.type = voteData.type;
 
     await this.postVotesRepository.save(postVote);
-    return new PostVoteSerializer(postVote);
+    return new CommonVoteSerializer(postVote);
   }
   async getPostVotes(
     query: PaginationQuery,
     postSlug: string,
-  ): Promise<PostVoteSerializer[]> {
+  ): Promise<CommonVoteSerializer[]> {
     const queryBuilder = this.postVotesRepository
       .createQueryBuilder()
       .innerJoin('PostVoteEntity.post', 'PostEntity')
       .where(`PostEntity.slug = :slug`, { slug: postSlug })
       .innerJoinAndSelect('PostVoteEntity.user', 'UserEntity');
-
-    console.log('no error found');
 
     queryBuilder.offset(query.offset);
     queryBuilder.limit(query.limit);
@@ -62,29 +60,28 @@ export class PostVotesService {
     const postVotes = await queryBuilder.getMany();
 
     return postVotes.map(
-      (postVotes: PostVoteEntity) => new PostVoteSerializer(postVotes),
+      (postVotes: PostVoteEntity) => new CommonVoteSerializer(postVotes),
     );
   }
 
-  async deletePostVote(userId: number, postSlug: string, voteId: number) {
-    console.log(userId, postSlug, voteId);
-    // TODO: filter postVote by userId and postSlug
+  async deletePostVote(userId: number, postSlug: string) {
     const queryBuilder = this.postVotesRepository
       .createQueryBuilder()
       .innerJoin('PostVoteEntity.post', 'PostEntity')
       .where(
-        `PostVoteEntity.id = :id AND PostVoteEntity.userId = :userID AND PostEntity.slug = :slug`,
-        { id: voteId, userId: userId, slug: postSlug },
+        `PostVoteEntity.userId = :userId AND PostEntity.slug = :postSlug`,
+        { userId, postSlug },
       );
 
     const postVote = await queryBuilder.getOne();
 
-    if (!postVote) HTTP404();
-    else {
+    if (postVote) {
       await this.postVotesRepository.remove(postVote);
       return {
         message: 'Deleted successfully',
       };
+    } else {
+      HTTP404();
     }
   }
 }

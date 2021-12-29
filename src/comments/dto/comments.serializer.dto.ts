@@ -7,7 +7,7 @@ import { CommentEntity } from '../comments.entity';
 export class CommentSerializer {
   @Expose() id: number;
   @Expose() content: string;
-  @Expose() countChild?: number;
+  @Expose() numberOfChild?: number;
 
   @Expose()
   @Transform(({ value }) => new UserMinimalSerializer(value))

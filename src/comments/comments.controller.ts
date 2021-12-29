@@ -32,7 +32,6 @@ export class CommentsController {
     @Body() body: CommentCreateDto,
     @Param() params: PostDetailsParams,
   ) {
-    console.log(req.user);
     return await this.commentsService.createComment(
       req.user.id,
       params.postSlug,

@@ -11,6 +11,9 @@ export class PostListSerializer {
   @Expose() image: string;
   @Expose() publishedAt: Date;
 
+  @Expose() numberOfComment: Date;
+  @Expose() numberOfVote: Date;
+
   @Expose()
   @Transform(({ value }) => new UserMinimalSerializer(value))
   user: UserMinimalSerializer;
