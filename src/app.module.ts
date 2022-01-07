@@ -3,20 +3,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_PIPE } from '@nestjs/core';
 
 import { configService } from './config/config.service';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
-import { PostsModule } from './posts/posts.module';
-import { CommentsModule } from './comments/comments.module';
-import { VotesModule } from './votes/votes.module';
+import { PostModule } from './post/post.module';
+import { MessageModule } from './message/message.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
+    AuthModule,
     CommonModule,
-    UsersModule,
-    PostsModule,
-    CommentsModule,
-    VotesModule,
+    UserModule,
+    PostModule,
+    MessageModule,
   ],
   providers: [
     {
