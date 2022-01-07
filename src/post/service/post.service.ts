@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { generateSlug } from '../../common/utils/index';
-import { UserEntity } from '../../user/user.entity';
+import { generateSlug } from 'src/common/utils/index';
+import { UserEntity } from 'src/user/user.entity';
+import { ImageType } from 'src/common/types/common.type';
+import { HTTP404, HTTPForbidden } from 'src/common/http.exceptions';
 import { PostCreateDto, PostUpdateDto } from '../dto/post.body.dto';
 import {
   PostListSerializer,
@@ -11,8 +13,6 @@ import {
 } from '../dto/post.serializer.dto';
 import { PostListQuery } from '../dto/post.urlParser.dto';
 import { PostEntity, TagEntity } from '../post.entity';
-import { ImageType } from '../../common/types/common.type';
-import { HTTP404, HTTPForbidden } from '../../common/http.exceptions';
 import { getPublishedPost } from '../post.query-manager';
 
 @Injectable()

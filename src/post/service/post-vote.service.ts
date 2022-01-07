@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { HTTP404 } from 'src/common/http.exceptions';
+import { getUserObjOr404 } from 'src/user/user.query-manager';
+import { PaginationQuery } from 'src/common/dto/common.query.dto';
 import { PostVoteEntity } from '../post.entity';
 import { VoteCreateUpdateDto } from '../dto/vote.body.dto';
 import { CommonVoteSerializer } from '../dto/vote.serializer.dto';
-import { getUserObjOr404 } from '../../user/user.query-manager';
-import { PaginationQuery } from '../../common/dto/common.query.dto';
-import { HTTP404 } from 'src/common/http.exceptions';
 import { getPublishedPostObjOr404 } from '../post.query-manager';
 
 @Injectable()

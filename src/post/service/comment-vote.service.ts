@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { PaginationQuery } from '../../common/dto/common.query.dto';
+import { PaginationQuery } from 'src/common/dto/common.query.dto';
+import { HTTP404 } from 'src/common/http.exceptions';
+import { getUserObjOr404 } from 'src/user/user.query-manager';
 import { VoteCreateUpdateDto } from '../dto/vote.body.dto';
-import { HTTP404 } from '../../common/http.exceptions';
-import { getUserObjOr404 } from '../../user/user.query-manager';
 import { CommonVoteSerializer } from '../dto/vote.serializer.dto';
 import { CommentVoteEntity, CommentEntity } from '../post.entity';
 

@@ -12,17 +12,17 @@ import {
   Query,
   UploadedFiles,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
+import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { PostListQuery } from 'src/post/dto/post.urlParser.dto';
+import { imgFileFilter } from 'src/common/filter/file.filter';
+import { storage } from 'src/common/file.handler';
+import { getImage } from 'src/common/utils/index';
 import { UserService } from '../service/user.service';
 import { RegistrationDto, UserUpdateDto } from '../dto/user.dto';
-import { LocalAuthGuard } from '../../auth/guards/local-auth.guard';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { PostListQuery } from '../../post/dto/post.urlParser.dto';
 import { UserEntity } from '../user.entity';
-import { imgFileFilter } from '../../common/filter/file.filter';
-import { storage } from '../../common/file.handler';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { getImage } from '../../common/utils/index';
 
 const pictureField = 'picture';
 if (pictureField !== UserEntity.pictureField) {

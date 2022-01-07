@@ -15,14 +15,14 @@ import {
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
-import { storage } from '../../common/file.handler';
-import { imgFileFilter } from '../../common/filter/file.filter';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { storage } from 'src/common/file.handler';
+import { imgFileFilter } from 'src/common/filter/file.filter';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { getImage } from 'src/common/utils/index';
 import { PostService } from '../service/post.service';
 import { PostDetailsParams, PostListQuery } from '../dto/post.urlParser.dto';
 import { PostCreateDto, PostUpdateDto } from '../dto/post.body.dto';
 import { PostEntity } from '../post.entity';
-import { getImage } from '../../common/utils/index';
 
 const postImage = 'image';
 if (postImage !== PostEntity.imageField) {

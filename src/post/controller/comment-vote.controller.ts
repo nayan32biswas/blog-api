@@ -11,7 +11,8 @@ import {
   ClassSerializerInterceptor,
   Query,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PaginationQuery } from 'src/common/dto/common.query.dto';
 import { VoteCreateUpdateDto } from '../dto/vote.body.dto';
 import { CommentVoteService } from '../service/comment-vote.service';

@@ -1,8 +1,6 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
 
 import { ImageType, KeyObject } from 'src/common/types/common.type';
 import { UserEntity } from '../user.entity';
@@ -11,17 +9,14 @@ import { UserSerializer } from '../dto/user.serializer';
 import { PostListQuery } from 'src/post/dto/post.urlParser.dto';
 import { PostListSerializer } from 'src/post/dto/post.serializer.dto';
 import { PostEntity } from 'src/post/post.entity';
-// import { AuthService } from '../../auth/service/auth.service';
-// private readonly authService: AuthService,
-
-const saltOrRounds = 10;
+import { AuthService } from '../../auth/service/auth.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
   ) {}
   async registration(userData: KeyObject): Promise<UserEntity> {
     const { password, email, firstName, lastName, role } = userData;
@@ -34,7 +29,7 @@ export class UserService {
       );
     }
 
-    const hashPass = await bcrypt.hash(password, saltOrRounds);
+    const hashPass = await this.authService.getHashPass(password);
 
     const user = new UserEntity();
     user.password = hashPass;
@@ -47,20 +42,10 @@ export class UserService {
     await this.userRepository.save(user);
     return user;
   }
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.userRepository.findOne({ username: username });
-    if (!user) return null;
-    const isMatch = await bcrypt.compare(pass, user.password);
-    if (isMatch) {
-      const { ...result } = user;
-      return result;
-    }
-    return null;
-  }
   async login(user: any) {
-    const payload = { username: user.username, id: user.id };
+    // const payload = { username: user.username, id: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.authService.createAccessToken(user),
       refresh_token: 'Implement It',
     };
   }
