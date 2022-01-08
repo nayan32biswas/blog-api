@@ -9,7 +9,7 @@ if (DEBUG) {
   console.log('Production Mode');
 }
 
-export const SECRET_KEY = process.env.SECRET_KEY || 'long-secret.key';
+export const SECRET_KEY = process.env.SECRET_KEY;
 
 export const EMAIL_CONF: KeyObject = {
   host: 'smtp.gmail.com',

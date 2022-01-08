@@ -2,6 +2,7 @@ version: '3.7'
 
 # environment
 x-volumes: &server-volume
+  SECRET_KEY: 'long-secret.key'
   POSTGRES_USER: 'postgres'
   POSTGRES_PASSWORD: 'postgres'
   POSTGRES_DB: 'blog_db'
