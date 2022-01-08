@@ -1,26 +1,28 @@
-import { Entity, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 
 import { BaseEntity } from '../common/common.entity';
+import { UserEntity } from 'src/user/user.entity';
 
 @Entity({ name: 'message' })
-export class UserEntity extends BaseEntity {
-  @ManyToOne(() => UserEntity)
+export class RoomEntity extends BaseEntity {
+  @Column()
+  name: string;
+  @Column()
+  description: string;
+
+  @ManyToMany(() => UserEntity)
+  @JoinTable()
+  users: UserEntity[];
+}
+
+@Entity({ name: 'message' })
+export class MessageEntity extends BaseEntity {
+  @ManyToOne(() => UserEntity, (user) => user.senders, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   sander: UserEntity;
-
-  @ManyToOne(() => UserEntity)
-  receiver: UserEntity;
-
-  // @ManyToOne(() => UserEntity, user => user.senders, { nullable: false, onDelete: 'CASCADE' })
-  // sander: UserEntity;
-  // @ManyToOne(() => UserEntity, user => user.receivers, { nullable: false, onDelete: 'CASCADE' })
-  // receiver: UserEntity;
 
   @Column()
   content: string;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  createdAt: Date;
 }

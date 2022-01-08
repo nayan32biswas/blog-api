@@ -18,10 +18,10 @@ export class PostCreateDto {
 
   @IsOptional()
   @IsDateString()
-  publishedAt: Date;
+  published_at: Date;
   @IsOptional()
   @IsBoolean()
-  isPublished: boolean;
+  is_published: boolean;
 }
 
 export class PostUpdateDto {
@@ -34,8 +34,8 @@ export class PostUpdateDto {
 
   @IsOptional()
   @IsDateString()
-  publishedAt: Date;
+  published_at: Date;
   @IsOptional()
   @IsBoolean()
-  isPublished: boolean;
+  is_published: boolean;
 }

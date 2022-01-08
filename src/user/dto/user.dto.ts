@@ -7,19 +7,19 @@ export class RegistrationDto {
   @IsEmail()
   email: string;
   @IsString()
-  firstName: string;
+  first_name: string;
   @IsString()
-  lastName: string;
+  last_name: string;
   @IsNotEmpty()
   password: string;
 }
 
 export class UserUpdateDto {
   @IsString()
-  readonly firstName: string;
+  readonly first_name: string;
   @IsString()
-  readonly lastName: string;
+  readonly last_name: string;
 
   @IsString()
-  readonly birthDate;
+  readonly birth_date;
 }

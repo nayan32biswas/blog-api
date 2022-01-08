@@ -4,8 +4,8 @@ import { HTTP404 } from '../common/http.exceptions';
 export const getPublishedPost = () => {
   const queryBuilder = PostEntity.getRepository().createQueryBuilder();
   queryBuilder.andWhere(
-    `((PostEntity.publishedAt IS NULL AND PostEntity.isPublished = true) OR (PostEntity.publishedAt IS NOT NULL AND PostEntity.publishedAt <= :publishedAt))`,
-    { publishedAt: new Date() },
+    `((PostEntity.published_at IS NULL AND PostEntity.is_published = true) OR (PostEntity.published_at IS NOT NULL AND PostEntity.published_at <= :published_at))`,
+    { published_at: new Date() },
   );
   return queryBuilder;
 };

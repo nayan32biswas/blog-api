@@ -9,7 +9,7 @@ export class PostListSerializer {
   @Expose() slug: string;
   @Expose() content: string;
   @Expose() image: string;
-  @Expose() publishedAt: Date;
+  @Expose() published_at: Date;
 
   @Expose() numberOfComment: Date;
   @Expose() numberOfVote: Date;
@@ -27,7 +27,7 @@ export class PostDetailsSerializer {
   // Export all data
   id: number;
   @Exclude()
-  updatedAt: Date;
+  updated_at: Date;
 
   @Expose()
   @Transform(({ value }) => new UserMinimalSerializer(value))

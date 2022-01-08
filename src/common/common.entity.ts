@@ -1,9 +1,8 @@
-import { Exclude } from 'class-transformer';
 import {
-  PrimaryGeneratedColumn,
   Column,
   UpdateDateColumn,
   CreateDateColumn,
+  PrimaryGeneratedColumn,
   BaseEntity as _BaseEntity,
 } from 'typeorm';
 
@@ -11,14 +10,12 @@ export abstract class BaseEntity extends _BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Exclude()
   @Column({ type: 'boolean', default: true })
-  isActive: boolean;
+  is_active: boolean;
 
-  @Exclude()
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
-  @Exclude()
+  created_at: Date;
+
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
+  updated_at: Date;
 }

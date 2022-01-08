@@ -1,14 +1,10 @@
-import {
-  Entity,
-  Column,
-  OneToMany,
-  UpdateDateColumn,
-  CreateDateColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
 
 import { BaseEntity } from '../common/common.entity';
 import { KeyObject } from '../common/types/common.type';
+import { MessageEntity, RoomEntity } from '../message/message.entity';
+import { ManyToMany, JoinTable } from 'typeorm';
 import {
   PostEntity,
   CommentEntity,
@@ -19,6 +15,7 @@ import {
 enum UserRole {
   BASIC = 'BASIC',
   ADMIN = 'ADMIN',
+  STAFF = 'STAFF',
 }
 
 @Entity({ name: 'user' })
@@ -33,20 +30,16 @@ export class UserEntity extends BaseEntity {
   username: string;
 
   @Column()
-  firstName: string;
+  first_name: string;
   @Column()
-  lastName: string;
-  @Expose()
-  get fullName(): string {
-    return `${this.firstName} ${this.lastName}`;
-  }
+  last_name: string;
 
   @Column({ nullable: true })
   picture: string;
   static pictureField = 'picture';
 
   @Column({ type: 'timestamptz', nullable: true })
-  birthDate: Date;
+  birth_date: Date;
 
   @Column({
     type: 'enum',
@@ -55,27 +48,8 @@ export class UserEntity extends BaseEntity {
   })
   role: UserRole;
 
-  @Exclude()
-  @Column({ type: 'boolean', default: false })
-  isStaff: boolean;
-  @Exclude()
-  @Column({ type: 'boolean', default: false })
-  isAdmin: boolean;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  createdAt: Date;
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
-  updatedAt: Date;
-
   @Column({ type: 'timestamptz', default: new Date() })
-  lastLogin: Date;
+  last_login: Date;
 
   // Reverse Relation
   @OneToMany(() => PostEntity, (post) => post.user)
@@ -85,10 +59,17 @@ export class UserEntity extends BaseEntity {
   comments: CommentEntity[];
 
   @OneToMany(() => PostVoteEntity, (postVote) => postVote.user)
-  postVotes: PostVoteEntity[];
+  post_votes: PostVoteEntity[];
 
   @OneToMany(() => CommentVoteEntity, (commentVote) => commentVote.user)
-  commentVotes: CommentVoteEntity[];
+  comment_votes: CommentVoteEntity[];
+
+  @ManyToMany(() => RoomEntity, (room) => room.users)
+  @JoinTable()
+  rooms: RoomEntity[];
+
+  @OneToMany(() => MessageEntity, (message) => message.sander)
+  senders: MessageEntity[];
 
   static async getUser(query: KeyObject) {
     return await this.getRepository().findOne(query);

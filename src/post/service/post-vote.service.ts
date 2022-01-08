@@ -57,10 +57,10 @@ export class PostVoteService {
     queryBuilder.offset(query.offset);
     queryBuilder.limit(query.limit);
 
-    const postVotes = await queryBuilder.getMany();
+    const post_votes = await queryBuilder.getMany();
 
-    return postVotes.map(
-      (postVotes: PostVoteEntity) => new CommonVoteSerializer(postVotes),
+    return post_votes.map(
+      (post_votes: PostVoteEntity) => new CommonVoteSerializer(post_votes),
     );
   }
 

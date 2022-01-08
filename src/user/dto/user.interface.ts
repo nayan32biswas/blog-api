@@ -1,7 +1,7 @@
 export interface UserInterface {
   id: number;
 
-  isActive: boolean;
+  is_active: boolean;
 
   createDateTime: Date;
   lastChangedDateTime: Date;
@@ -9,11 +9,8 @@ export interface UserInterface {
   username: string;
   email: string;
 
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
 
-  birthDate: Date;
-
-  isStaff: boolean;
-  isAdmin: boolean;
+  birth_date: Date;
 }

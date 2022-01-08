@@ -19,7 +19,7 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
   async registration(userData: KeyObject): Promise<UserEntity> {
-    const { password, email, firstName, lastName, role } = userData;
+    const { password, email, first_name, last_name, role } = userData;
 
     const previousUser = await this.userRepository.findOne({ email: email });
     if (previousUser) {
@@ -35,8 +35,8 @@ export class UserService {
     user.password = hashPass;
     user.email = email;
     user.username = email.match(/^([^@]*)@/)[1];
-    user.firstName = firstName;
-    user.lastName = lastName;
+    user.first_name = first_name;
+    user.last_name = last_name;
     user.role = role;
 
     await this.userRepository.save(user);
@@ -60,13 +60,13 @@ export class UserService {
     userData: UserUpdateDto,
     picture: ImageType,
   ): Promise<UserEntity> {
-    const { firstName, lastName, birthDate } = userData;
+    const { first_name, last_name, birth_date } = userData;
 
     const user = await this.userRepository.findOne(id);
 
-    firstName !== user.firstName && (user.firstName = firstName);
-    lastName !== user.lastName && (user.lastName = lastName);
-    birthDate !== user.birthDate && (user.birthDate = birthDate);
+    first_name !== user.first_name && (user.first_name = first_name);
+    last_name !== user.last_name && (user.last_name = last_name);
+    birth_date !== user.birth_date && (user.birth_date = birth_date);
     picture !== undefined && (user.picture = picture.path);
 
     return await this.userRepository.save(user);

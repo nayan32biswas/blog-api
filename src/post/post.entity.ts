@@ -6,9 +6,6 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
   In,
 } from 'typeorm';
 
@@ -18,9 +15,6 @@ import { toAlphabet } from '../common/utils/strings';
 
 @Entity({ name: 'tag' })
 export class TagEntity extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @Column({ unique: true, length: 100 })
   name: string;
 
@@ -70,23 +64,10 @@ export class PostEntity extends BaseEntity {
   static imageField = 'image';
 
   @Column({ type: 'timestamptz', nullable: true })
-  publishedAt: Date;
+  published_at: Date;
 
   @Column({ default: false })
-  isPublished: boolean;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
-  updatedAt: Date;
+  is_published: boolean;
 
   // Reverse Relation
   @Exclude()
@@ -124,19 +105,6 @@ export class CommentEntity extends BaseEntity {
   })
   parent: CommentEntity;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
-  updatedAt: Date;
-
   // Reverse Relation
   @OneToMany(() => CommentVoteEntity, (vote) => vote.comment)
   votes: CommentVoteEntity[];
@@ -152,7 +120,7 @@ export enum VoteType {
 
 @Entity({ name: 'post_vote' })
 export class PostVoteEntity extends BaseEntity {
-  @ManyToOne(() => UserEntity, (user) => user.postVotes, {
+  @ManyToOne(() => UserEntity, (user) => user.post_votes, {
     nullable: false,
     onDelete: 'CASCADE',
   })
@@ -174,7 +142,7 @@ export class PostVoteEntity extends BaseEntity {
 
 @Entity({ name: 'comment_vote' })
 export class CommentVoteEntity extends BaseEntity {
-  @ManyToOne(() => UserEntity, (user) => user.commentVotes, {
+  @ManyToOne(() => UserEntity, (user) => user.comment_votes, {
     nullable: false,
     onDelete: 'CASCADE',
   })

@@ -27,7 +27,7 @@ export class PostService {
     postData: PostCreateDto,
     image: ImageType,
   ): Promise<PostEntity> {
-    const { title, content, tags, isPublished, publishedAt } = postData;
+    const { title, content, tags, is_published, published_at } = postData;
     const post = new PostEntity();
 
     // Assign start
@@ -42,8 +42,8 @@ export class PostService {
       const finalTags = await TagEntity.createOrGetTags(tags);
       post.tags = finalTags;
     }
-    isPublished !== undefined && (post.isPublished = isPublished);
-    publishedAt !== undefined && (post.publishedAt = publishedAt);
+    is_published !== undefined && (post.is_published = is_published);
+    published_at !== undefined && (post.published_at = published_at);
     post.user = await UserEntity.getUser({ id: userId });
     // Assign end
 
@@ -121,7 +121,7 @@ export class PostService {
     if (!post) HTTP404();
     else if (post.user.id !== userId) HTTPForbidden();
     else {
-      const { title, content, isPublished, publishedAt } = postData;
+      const { title, content, is_published, published_at } = postData;
 
       if (image && image?.path) {
         post.image = image.path;
@@ -129,8 +129,8 @@ export class PostService {
       if (title !== undefined) title !== post.title && (post.title = title);
       if (content !== undefined)
         content !== post.content && (post.content = content);
-      isPublished !== undefined && (post.isPublished = isPublished);
-      publishedAt !== undefined && (post.publishedAt = publishedAt);
+      is_published !== undefined && (post.is_published = is_published);
+      published_at !== undefined && (post.published_at = published_at);
       await this.postRepository.save(post);
       const updatePost = await this.postRepository.findOne(
         { slug },
