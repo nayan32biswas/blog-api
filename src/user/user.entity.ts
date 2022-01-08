@@ -1,10 +1,15 @@
 import { Entity, Column, OneToMany } from 'typeorm';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 
 import { BaseEntity } from '../common/common.entity';
 import { KeyObject } from '../common/types/common.type';
-import { MessageEntity, RoomEntity } from '../message/message.entity';
-import { ManyToMany, JoinTable } from 'typeorm';
+import {
+  MessageEntity,
+  MessageRequestEntity,
+  RoomEntity,
+  RoomToUserEntity,
+} from '../message/message.entity';
+import { ManyToMany } from 'typeorm';
 import {
   PostEntity,
   CommentEntity,
@@ -64,12 +69,14 @@ export class UserEntity extends BaseEntity {
   @OneToMany(() => CommentVoteEntity, (commentVote) => commentVote.user)
   comment_votes: CommentVoteEntity[];
 
-  @ManyToMany(() => RoomEntity, (room) => room.users)
-  @JoinTable()
-  rooms: RoomEntity[];
+  @ManyToMany(() => RoomToUserEntity, (roomToUser) => roomToUser.user)
+  room_to_users: RoomEntity[];
 
   @OneToMany(() => MessageEntity, (message) => message.sander)
   senders: MessageEntity[];
+
+  @OneToMany(() => MessageRequestEntity, (message) => message.receiver)
+  message_requests: MessageRequestEntity[];
 
   static async getUser(query: KeyObject) {
     return await this.getRepository().findOne(query);
