@@ -1,9 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class RegistrationDto {
-  @IsString()
-  role: string;
-
+  // @IsNumber()
+  // @IsEnum(UserRole)
+  // role: UserRole;
   @IsEmail()
   email: string;
   @IsString()

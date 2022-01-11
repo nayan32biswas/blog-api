@@ -42,6 +42,11 @@ export class MessagesGateway
     console.log('Client disconnected');
   }
 
+  @SubscribeMessage('createRoom')
+  async onCreateRoom(socket: Socket, payload: any) {
+    return 'this.roomService.crateRoom(socket, payload)';
+  }
+
   private disconnect(socket: Socket) {
     socket.emit('Error', new UnauthorizedException());
     socket.disconnect();

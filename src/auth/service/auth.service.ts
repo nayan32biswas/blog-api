@@ -32,13 +32,13 @@ export class AuthService {
   }
 
   createAccessToken(user: UserEntity) {
-    const payload = { username: user.username, id: user.id };
+    const payload = { username: user.username, id: user.id, role: user.role };
     return this.jwtService.sign(payload);
   }
   createRefreshToken(user: UserEntity) {
     new NotImplementedException('createRefreshToken');
 
-    const payload = { username: user.username, id: user.id };
+    const payload = { username: user.username, id: user.id, role: user.role };
     return this.jwtService.sign(payload);
   }
 

@@ -17,10 +17,10 @@ import {
   CommentVoteEntity,
 } from 'src/post/post.entity';
 
-enum UserRole {
-  BASIC = 'BASIC',
-  ADMIN = 'ADMIN',
-  STAFF = 'STAFF',
+export enum UserRole {
+  BASIC = 1,
+  STAFF = 50,
+  ADMIN = 100,
 }
 
 @Entity({ name: 'user' })
@@ -46,11 +46,7 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'timestamptz', nullable: true })
   birth_date: Date;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.BASIC,
-  })
+  @Column({ type: 'int', default: UserRole.BASIC })
   role: UserRole;
 
   @Column({ type: 'timestamptz', default: new Date() })

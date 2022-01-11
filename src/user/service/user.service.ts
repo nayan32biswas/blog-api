@@ -19,7 +19,7 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
   async registration(userData: KeyObject): Promise<UserEntity> {
-    const { password, email, first_name, last_name, role } = userData;
+    const { password, email, first_name, last_name } = userData;
 
     const previousUser = await this.userRepository.findOne({ email: email });
     if (previousUser) {
@@ -37,7 +37,6 @@ export class UserService {
     user.username = email.match(/^([^@]*)@/)[1];
     user.first_name = first_name;
     user.last_name = last_name;
-    user.role = role;
 
     await this.userRepository.save(user);
     return user;
