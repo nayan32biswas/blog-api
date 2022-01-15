@@ -11,3 +11,7 @@ export const toAlphabet = (str: string) => str.replace(/[^\w]+/gi, '');
 
 export const slugify = (str: string) =>
   str.replace(/[^\w]+/gi, '-').toLowerCase();
+
+export const commaSeperateStringToArray = (str: string) => {
+  return str.split(',');
+};

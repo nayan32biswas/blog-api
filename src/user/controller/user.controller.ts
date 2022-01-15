@@ -41,6 +41,7 @@ export class UserController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
+    console.log('login controller');
     return this.userService.login(req.user);
   }
   @UseGuards(JwtAuthGuard)

@@ -20,8 +20,8 @@ export class AuthService {
     return await bcrypt.hash(password, saltOrRounds);
   }
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.userRepository.findOne({ username: username });
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.userRepository.findOne({ email: email });
     if (!user) return null;
     const isMatch = await bcrypt.compare(pass, user.password);
     if (isMatch) {

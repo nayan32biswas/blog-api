@@ -4,10 +4,14 @@ import { ValidationPipe } from '@nestjs/common';
 
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filter/exceptions.filter';
+import { ALLOWED_HOSTS } from './config/config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn'],
+    cors: {
+      origin: ALLOWED_HOSTS,
+    },
   });
 
   const { httpAdapter } = app.get(HttpAdapterHost);

@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { commaSeperateStringToArray } from 'src/common/utils/strings';
 
 import { KeyObject } from '../common/types/common.type';
 
@@ -29,6 +30,9 @@ export const EMAIL_VERIFICATION_EXPIRES_IN = '1h';
 export const JWT_ALGORITHM = 'HS256';
 export const DEFAULT_LIMIT = 20;
 export const MEDIA_ROOT = './media/';
+export const ALLOWED_HOSTS = commaSeperateStringToArray(
+  process.env.ALLOWED_HOSTS || 'http://localhost:8080',
+);
 
 class ConfigService {
   public getTypeOrmConfig(): TypeOrmModuleOptions {
