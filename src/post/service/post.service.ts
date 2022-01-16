@@ -12,8 +12,10 @@ import {
   PostDetailsSerializer,
 } from '../dto/post.serializer.dto';
 import { PostListQuery } from '../dto/post.urlParser.dto';
-import { PostEntity, TagEntity } from '../post.entity';
+import { PostEntity, TagEntity, CommentEntity } from '../post.entity';
 import { getPublishedPost } from '../post.query-manager';
+
+import { convert } from 'html-to-text';
 
 @Injectable()
 export class PostService {
@@ -34,6 +36,8 @@ export class PostService {
     post.slug = await generateSlug(this.postRepository, title, 'slug');
     post.title = title;
     post.content = content;
+    post.short_content = convert(content, { wordwrap: 150 });
+
     if (image?.path) {
       post.image = image.path;
     }
@@ -42,7 +46,6 @@ export class PostService {
       const finalTags = await TagEntity.createOrGetTags(tags);
       post.tags = finalTags;
     }
-    console.log(typeof is_published);
     is_published != null && (post.is_published = is_published);
     published_at != null && (post.published_at = published_at);
     post.user = await UserEntity.getUser({ id: userId });
@@ -104,6 +107,14 @@ export class PostService {
       .getOne();
 
     if (!post) HTTP404();
+
+    const comments = await CommentEntity.getRepository()
+      .createQueryBuilder()
+      .andWhere('CommentEntity.post = :postId', { postId: post.id })
+      .innerJoinAndSelect('CommentEntity.user', 'UserEntity')
+      .getMany();
+
+    post.comments = comments;
 
     return new PostDetailsSerializer(post);
   }

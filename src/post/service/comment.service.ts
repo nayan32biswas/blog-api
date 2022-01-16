@@ -37,6 +37,12 @@ export class CommentService {
         HTTPForbidden();
       }
       comment.parent = parentComment;
+
+      const total_count = await this.commentRepository.count({
+        parent: parentComment,
+      });
+      parentComment.number_of_child = total_count + 1;
+      await this.commentRepository.save(parentComment);
     }
     comment.content = commentData.content;
     comment.post = post;
@@ -76,7 +82,7 @@ export class CommentService {
 
     const comments = await queryBuilder.getMany();
 
-    return (await comments).map((comment) => new CommentSerializer(comment));
+    return await comments.map((comment) => new CommentSerializer(comment));
   }
 
   async updateComment(

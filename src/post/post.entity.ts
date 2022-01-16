@@ -59,6 +59,12 @@ export class PostEntity extends BaseEntity {
   @Column('text')
   content: string;
 
+  @Column({ type: 'text', nullable: true })
+  short_content: string;
+
+  @Column({ default: 0 })
+  number_of_comment: number;
+
   @Column({ nullable: true })
   image: string;
   static imageField = 'image';
@@ -98,6 +104,9 @@ export class CommentEntity extends BaseEntity {
 
   @Column({ nullable: false })
   content: string;
+
+  @Column({ default: 0 })
+  number_of_child: number;
 
   @ManyToOne(() => CommentEntity, (comment) => comment.childrens, {
     nullable: true,

@@ -63,6 +63,7 @@ export class PostController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':postSlug')
   getPost(@Param() params: PostDetailsParams) {
+    console.log(params);
     return this.postService.getPost(params.postSlug);
   }
 

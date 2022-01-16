@@ -2,12 +2,13 @@ import { Exclude, Transform, Expose } from 'class-transformer';
 
 import { UserMinimalSerializer } from 'src/user/dto/user.serializer';
 import { TagEntity } from '../post.entity';
+import { CommentSerializer } from './comments.serializer.dto';
 
 @Exclude()
 export class PostListSerializer {
   @Expose() title: string;
   @Expose() slug: string;
-  @Expose() content: string;
+  @Expose() short_content: string;
   @Expose() image: string;
   @Expose() published_at: Date;
 
@@ -36,6 +37,9 @@ export class PostDetailsSerializer {
   @Expose()
   @Transform(({ value }) => value.map((tag: TagEntity) => tag.name))
   tags: TagEntity[];
+
+  @Expose()
+  comments!: CommentSerializer[];
 
   constructor(partial: Partial<PostDetailsSerializer>) {
     Object.assign(this, partial);
