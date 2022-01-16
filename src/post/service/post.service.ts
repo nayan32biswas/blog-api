@@ -42,8 +42,9 @@ export class PostService {
       const finalTags = await TagEntity.createOrGetTags(tags);
       post.tags = finalTags;
     }
-    is_published !== undefined && (post.is_published = is_published);
-    published_at !== undefined && (post.published_at = published_at);
+    console.log(typeof is_published);
+    is_published != null && (post.is_published = is_published);
+    published_at != null && (post.published_at = published_at);
     post.user = await UserEntity.getUser({ id: userId });
     // Assign end
 

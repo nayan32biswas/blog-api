@@ -1,6 +1,8 @@
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsBooleanString,
   IsDateString,
   IsOptional,
   IsString,
@@ -19,8 +21,9 @@ export class PostCreateDto {
   @IsOptional()
   @IsDateString()
   published_at: Date;
+
   @IsOptional()
-  @IsBoolean()
+  @Transform(({ value }) => value == 'true')
   is_published: boolean;
 }
 
@@ -35,7 +38,8 @@ export class PostUpdateDto {
   @IsOptional()
   @IsDateString()
   published_at: Date;
+
   @IsOptional()
-  @IsBoolean()
+  @Transform(({ value }) => value == 'true')
   is_published: boolean;
 }

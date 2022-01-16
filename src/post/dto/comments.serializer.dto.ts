@@ -1,4 +1,4 @@
-import { Exclude, Transform, Expose, plainToClass } from 'class-transformer';
+import { Exclude, Transform, Expose, plainToInstance } from 'class-transformer';
 
 import { UserMinimalSerializer } from 'src/user/dto/user.serializer';
 import { CommentEntity } from '../post.entity';
@@ -23,7 +23,7 @@ export class CommentSerializer {
 }
 
 function toObject(comment: CommentEntity): CommentSerializer {
-  return plainToClass(CommentSerializer, comment, {
+  return plainToInstance(CommentSerializer, comment, {
     enableImplicitConversion: true,
   });
 }
